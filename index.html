@@ -1,268 +1,104 @@
-
-和 Gemini 的對話
-你說了
-我現在正在要做一份ai的比賽我已經做出許多的圖片，我要做的東西是一個戀愛遊戲，我希望玩家可以在一個網站上遊玩，所以請幫我做一個網站，
-
-Gemini 說了
-太棒了！參加 AI 比賽並結合戀愛遊戲（Galgame/Visual Novel）是一個非常吸睛的創意。既然你已經準備好了精美的圖片，現在最核心的任務就是建立一個**「展示平台」**，讓玩家可以流暢地體驗劇情。
-
-要做出一個網頁版戀愛遊戲，我建議使用 HTML5 + CSS3 + JavaScript 來開發。這對比賽來說既專業、載入速度快，又方便評審直接在瀏覽器開啟。
-
-以下我為你準備了一個基礎的遊戲框架代碼，你可以直接複製到編輯器（如 VS Code）中使用。
-
-1. 網頁版戀愛遊戲基礎架構
-這個代碼包含三個部分：背景圖片、對話框、以及「下一步」的點擊功能。
-
-HTML
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的 AI 戀愛遊戲</title>
+    <title>練愛 Practice of Love</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; }
+        #game-container { width: 100vw; height: 100vh; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; transition: background 1s ease; }
         
-        /* 遊戲背景層 */
-        #game-container {
-            width: 100vw; height: 100vh;
-            background-size: cover;
-            background-position: center;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            transition: background-image 0.5s ease-in-out;
-        }
+        /* 角色選擇面板 */
+        #selector-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
+        .char-btn { width: 80%; max-width: 400px; padding: 15px; margin: 10px; border: 2px solid white; color: white; text-align: center; cursor: pointer; border-radius: 10px; transition: 0.3s; }
+        .char-btn:hover { background: white; color: black; }
 
         /* 對話框樣式 */
-        #dialogue-box {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 20px; margin: 20px;
-            border: 2px solid #ff69b4; border-radius: 15px;
-            min-height: 120px; cursor: pointer;
-            position: relative;
-        }
-
-        #character-name {
-            font-weight: bold; color: #ff69b4; font-size: 1.2em; margin-bottom: 10px;
-        }
-
-        #text-content { line-height: 1.6; font-size: 1.1em; }
-
-        /* 提示字 */
-        .hint { position: absolute; right: 20px; bottom: 10px; font-size: 0.8em; color: #aaa; }
-    </style>
-</head>
-<body onclick="nextStep()">
-
-    <div id="game-container" style="background-image: url('你的背景圖檔案名.jpg');">
-        <div id="dialogue-box">
-            <div id="character-name">???</div>
-            <div id="text-content">點擊螢幕開始你的 AI 戀愛冒險...</div>
-            <div class="hint">點擊繼續 >></div>
-        </div>
-    </div>
-
-    <script>
-        // 這裡設定你的劇本與圖片路徑
-        const script = [
-            { name: "系統", text: "歡迎來到這個由 AI 創造的世界。", bg: "bg1.jpg" },
-            { name: "神祕少女", text: "你...終於來了，我等你好久了。", bg: "girl_appearance.jpg" },
-            { name: "主角", text: "妳是誰？為什麼會出現在我的夢境裡？", bg: "girl_appearance.jpg" },
-            { name: "神祕少女", text: "這不是夢，這是我們共同創作的現實。", bg: "forest.jpg" }
-        ];
-
-        let currentStep = 0;
-
-        function nextStep() {
-            if (currentStep < script.length) {
-                const step = script[currentStep];
-                document.getElementById('character-name').innerText = step.name;
-                document.getElementById('text-content').innerText = step.text;
-                document.getElementById('game-container').style.backgroundImage = `url('${step.bg}')`;
-                currentStep++;
-            } else {
-                document.getElementById('text-content').innerText = "（未完待續...）";
-            }
-        }
-    </script>
-</body>
-</html>
-2. 你接下來需要做的事
-更換圖片路徑：將代碼中 script 陣列裡的 bg: "..." 換成你生成的 AI 圖片檔名（請確保圖片與網頁檔案放在同一個資料夾）。
-
-加入音效：如果你有生成的 AI 音樂或配音，可以用 HTML5 的 <audio> 標籤加入，增加沉浸感。
-
-分支選擇：如果你希望玩家可以做選擇（例如：A. 牽她的手 B. 轉身逃走），我可以幫你加上「選項按鈕」的代碼。
-
-3. 推薦的快速部署方案
-既然是比賽，你可能需要讓評審直接點開網址就能玩：
-
-GitHub Pages (免費)：最推薦。把你的代碼與圖片上傳到 GitHub，開啟 Pages 功能，就會得到一個 xxx.github.io 的網址。
-
-Vercel / Netlify：操作簡單，直接把資料夾拖進去就能產生網址。
-
-你想讓我幫你進一步加入「分支選項」的功能（讓玩家可以選不同的對話），還是想知道如何加入背景音樂？
-
-你說了
-GitHub Pages可以講得更加清楚嗎
-
-Gemini 說了
-沒問題！使用 GitHub Pages 是比賽作品最專業的展示方式，因為它不僅提供免費網址，還能讓評審看到你的程式碼架構。
-
-你可以把 GitHub Pages 想像成一個免費的雲端主機，它會把你上傳的 HTML 檔案直接變成一個對外公開的網站。
-
-以下是手把手教學：
-
-第一步：準備好你的檔案
-請確保你的資料夾結構長這樣（這點非常重要，檔名建議全英文）：
-
-index.html (你的主程式碼)
-
-bg1.jpg (你的 AI 圖片)
-
-music.mp3 (如果有音樂的話)
-
-小提醒： 檔案名稱請避開中文，因為網頁伺服器有時候讀不到中文路徑。
-
-第二步：上傳到 GitHub
-登入 GitHub 並點擊右上角的 「+」 -> New repository。
-
-Repository name：取一個名字（例如：my-ai-game）。
-
-設為 Public，然後點擊 Create repository。
-
-在接下來的頁面點擊 "uploading an existing file"（上傳現有檔案）。
-
-把你的 index.html 和所有圖片、音檔全部拖進去。
-
-拉到最下面點擊 Commit changes。
-
-第三步：開啟網站功能 (Pages)
-上傳完成後，你的檔案已經在雲端了，現在要把它變成網站：
-
-在你的 Repository 頁面點擊上方選單的 Settings (設定)。
-
-在左側邊欄找到 Pages 標籤。
-
-在 Build and deployment 下方的 Branch，將 None 改成 main，後面的資料夾選 /(root)。
-
-按下 Save。
-
-第四步：取得網址
-稍等約 1~3 分鐘，重新整理 Pages 頁面。
-
-上方會出現一行字："Your site is live at ..."。
-
-那個網址（通常是 https://你的帳號.github.io/my-ai-game/）就是可以交給比賽評審的成品網址了！
-
-常見問題：圖片跑不出來怎麼辦？
-這是新手最常遇到的問題。請檢查：
-
-大小寫要一致：如果你的圖片檔名是 BG.jpg，程式碼寫 bg.jpg，在電腦上可能可以看，但上傳到 GitHub 就會破圖。
-
-路徑問題：在程式碼中引用圖片時，直接寫 bg1.jpg 即可，不需要寫 C:/Users/... 這種電腦路徑。
-
-進階建議：讓比賽更有競爭力
-評審除了看你的 AI 圖畫得好不好，還會看你的技術完整度。
-
-ReadMe 說明檔：在 GitHub 根目錄放一個 README.md，寫下你用了什麼 AI 工具（Midjourney? Stable Diffusion?）、遊戲的故事背景。
-
-HTTPS 安全性：GitHub Pages 自動提供 HTTPS 加密，這會讓網站看起來比一般個人架設的更安全可靠。
-
-你現在已經把圖片和 HTML 準備好了嗎？如果不確定圖片路徑怎麼寫才對，可以把你的程式碼片段貼過來，我幫你檢查！
-
-你說了
-幫我生成第二步驟中要放進去的程式碼跟圖片檔案生成給我讓我可以直接下載然後丟進去。
-
-Gemini 說了
-沒問題！為了讓你能夠直接「一鍵下載並上傳」，我幫你準備了一個完整的遊戲壓縮檔結構。
-
-因為我無法直接讓你下載 .zip 檔，但我會在這裡幫你生成 4 張符合戀愛遊戲風格的 AI 圖片，並提供完整的 index.html 程式碼。你可以照著下面的步驟操作：
-
-第一步：下載我為你生成的圖片
-我現在為你生成四場景：校園門口、教室、黃昏的屋頂、以及一位神祕少女。
-（請將這些圖片下載後，分別重新命名為 bg1.jpg, bg2.jpg, bg3.jpg, character.png）
-
-(正在為你生成遊戲素材...)
-1. 遊戲開場：櫻花盛開的校園門口
-
-2. 劇情發展：午後陽光灑進的教室內部
-
-3. 告白場景：黃昏金色的學校屋頂
-
-4. 女主角立繪：穿著校服、帶有溫柔微笑的少女
-
-第二步：複製下方的 index.html 程式碼
-請在你的電腦桌面建立一個資料夾（例如叫 my-game），在裡面新增一個記事本，貼入以下代碼，並另存新檔為 index.html。
-
-HTML
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <title>AI 戀愛物語 - 比賽展示版</title>
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #000; font-family: "Microsoft JhengHei", sans-serif; }
-        
-        /* 背景容器 */
-        #game-screen {
-            width: 100vw; height: 100vh;
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-            transition: background-image 0.8s ease-in-out;
-        }
-
-        /* 角色立繪 */
-        #character {
-            position: absolute; bottom: 150px; height: 70%;
-            transition: opacity 0.5s; opacity: 0;
-        }
-
-        /* 對話框 */
-        #ui-layer {
-            width: 90%; max-width: 800px; background: rgba(20, 20, 20, 0.85);
-            border: 3px solid #ffadd2; border-radius: 20px;
-            padding: 25px; margin-bottom: 30px; z-index: 10;
-            cursor: pointer; box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        #name-tag { font-size: 1.4em; color: #ff85c0; font-weight: bold; margin-bottom: 10px; }
-        #text-box { font-size: 1.2em; color: white; line-height: 1.6; min-height: 60px; }
-        .click-hint { text-align: right; font-size: 0.8em; color: #ffadd2; margin-top: 10px; animation: blink 1.5s infinite; }
-        
-        @keyframes blink { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
+        #ui-layer { width: 90%; max-width: 800px; background: rgba(30, 30, 30, 0.9); border: 2px solid #fff; border-radius: 15px; padding: 25px; margin-bottom: 30px; cursor: pointer; z-index: 10; }
+        #name-tag { font-size: 1.3em; color: #ffadd2; font-weight: bold; margin-bottom: 10px; }
+        #text-box { font-size: 1.1em; color: white; line-height: 1.6; min-height: 80px; }
+        .click-hint { text-align: right; color: #888; font-size: 0.8em; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="game-screen" style="background-image: url('bg1.jpg');">
-        <img id="character" src="character.png" alt="Heroine">
-        
-        <div id="ui-layer" onclick="playNext()">
-            <div id="name-tag">系統</div>
-            <div id="text-box">正在載入 AI 戀愛世界... (請點擊畫面繼續)</div>
-            <div class="click-hint">CLICK TO NEXT >></div>
-        </div>
+<div id="game-container" style="background-image: url('rain_night.jpg');">
+    <div id="selector-layer">
+        <h2 style="color:white;">請選擇角色</h2>
+        <div class="char-btn" onclick="startRoute('zhou')">周渺 (18歲 高中生)</div>
+        <div class="char-btn" onclick="startRoute('lin')">林曜晨 (19歲 系排成員)</div>
+        <div class="char-btn" onclick="startRoute('mu')">穆修 (22歲 同系學長)</div>
+        <div class="char-btn" onclick="startRoute('jiang')">江逸 (25歲 咖啡廳店長)</div>
     </div>
 
-    <script>
-        const script = [
-            { name: "主角", text: "又是個平凡的早晨，櫻花開得真美...", bg: "bg1.jpg", showChar: false },
-            { name: "???", text: "等一下！那邊的那位同學！", bg: "bg1.jpg", showChar: true },
-            { name: "神祕少女", text: "呼...呼...還好趕上了。我是轉學生，請問教室怎麼走？", bg: "bg2.jpg", showChar: true },
-            { name: "神祕少女", text: "謝謝你帶路！對了...我們是不是在哪裡見過面？", bg: "bg3.jpg", showChar: true },
-            { name: "系統", text: "【Demo 結束】這僅僅是 AI 創作冒險的開端。", bg: "bg3.jpg", showChar: false }
-        ];
+    <div id="ui-layer" onclick="handleNext()">
+        <div id="name-tag">旁白</div>
+        <div id="text-box">晚間，城市淅瀝瀝地下著雨... 雨聲像沒完沒了的碎玻璃。</div>
+        <div class="click-hint">點擊繼續...</div>
+    </div>
+</div>
 
-        let index = 0;
-        function playNext() {
-            if (index < script.length) {
-                const s = script[index];
-                document.getElementById('name-tag').innerText = s.name;
-                document.getElementById('text-box').innerText = s.text;
-                document.getElementById('game-screen').style.backgroundImage = `url('${s.bg}')`;
-                document.getElementById('character').style.opacity = s.showChar ? "1" : "0";
-                index++;
+<script>
+    let currentRoute = 'prologue';
+    let step = 0;
+
+    // 劇本數據 [引用自 PDF 內容]
+    const scripts = {
+        prologue: [
+            { name: "旁白", text: "你走在那條熟悉的路上，準備回家。", bg: "rain_night.jpg" },
+            { name: "??", text: "奇怪的人......", bg: "rain_night.jpg" },
+            { name: "系統", text: "請選擇你想深入瞭解的「練愛」對象。", showSelector: true }
+        ],
+        zhou: [
+            { name: "旁白", text: "放學後，你到周渺就讀的高中找他。", bg: "school_track.jpg" },
+            { name: "周渺", text: "姐、姐姐......", bg: "school_track.jpg" },
+            { name: "周渺", text: "姐姐......你不要我了嗎？", bg: "school_track.jpg" }
+        ],
+        lin: [
+            { name: "林曜晨", text: "（聳肩）同路也算一起吧。", bg: "rain_walk.jpg" },
+            { name: "林曜晨", text: "（把傘稍微往你那邊斜）我知道就好......", bg: "rain_walk.jpg" },
+            { name: "林曜晨", text: "躲雨這種事，我們不是一直都一起嗎？", bg: "rain_walk.jpg" }
+        ],
+        mu: [
+            { name: "穆修", text: "怎麼了嗎？有什麼問題嗎？", bg: "library.jpg" },
+            { name: "旁白", text: "你挪開了目光，臉蛋微微泛紅快步走掉...", bg: "library.jpg" },
+            { name: "穆修", text: "（嘴角微微上揚）看這作者的人很少呢。", bg: "library.jpg" }
+        ],
+        jiang: [
+            { name: "江逸", text: "「歡迎光臨....稍等一下....」", bg: "cafe.jpg" },
+            { name: "你", text: "那個....今天的飲品有什麼特別的推薦？", bg: "cafe.jpg" },
+            { name: "江逸", text: "嗯，你可以考慮卡布奇諾...", bg: "cafe.jpg" },
+            { name: "你", text: "原來你一直都記得我常喝的飲料嗎？", bg: "cafe.jpg" }
+        ]
+    };
+
+    function handleNext() {
+        const route = scripts[currentRoute];
+        if (step < route.length) {
+            const data = route[step];
+            if (data.showSelector) {
+                document.getElementById('selector-layer').style.display = 'flex';
             } else {
-                location.reload(); // 結束後重播
+                updateUI(data);
+                step++;
             }
+        }
+    }
+
+    function updateUI(data) {
+        document.getElementById('name-tag').innerText = data.name;
+        document.getElementById('text-box').innerText = data.text;
+        if (data.bg) {
+            document.getElementById('game-container').style.backgroundImage = `url('${data.bg}')`;
+        }
+    }
+
+    function startRoute(routeKey) {
+        currentRoute = routeKey;
+        step = 0;
+        document.getElementById('selector-layer').style.display = 'none';
+        handleNext();
+    }
+</script>
+</body>
+</html>

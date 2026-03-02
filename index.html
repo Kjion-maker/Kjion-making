@@ -7,31 +7,49 @@
         :root { --pink: #ffadd2; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; color: white; }
         
-        .screen { position: absolute; width: 100vw; height: 100vh; display: none; background-size: cover; background-position: center; transition: opacity 0.8s; }
+        /* 核心畫面容器 */
+        .screen { 
+            position: absolute; 
+            width: 100vw; 
+            height: 100vh; 
+            display: none; 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            transition: opacity 0.8s ease-in-out; 
+        }
         .active { display: flex; opacity: 1; }
 
-        /* 1. 開場封面頁面 */
+        /* 1. 開場封面頁面 - 強制鋪滿背景 */
         #start-screen { 
-            background-color: #000;
-            background-image: url('cover.jpg'); /* 這裡會讀取你的封面 */
+            background-image: url('cover.jpg'); 
             flex-direction: column; 
-            justify-content: flex-end; /* 按鈕往下放 */
-            align-items: center; 
+            justify-content: center; 
+            align-items: center;
         }
         
+        /* ENTER 按鈕 - 加上發光與呼吸感 */
         .enter-btn { 
-            margin-bottom: 100px; /* 調整按鈕在封面的高度 */
-            padding: 12px 60px; 
+            margin-top: 250px; /* 如果擋到標題，可以改這個數字 */
+            padding: 15px 80px; 
             border: 2px solid var(--pink); 
-            background: rgba(0,0,0,0.7); 
+            background: rgba(0,0,0,0.6); 
             color: var(--pink); 
-            font-size: 1.5em;
+            font-size: 1.8em;
             cursor: pointer; 
-            letter-spacing: 5px;
-            transition: 0.3s;
+            letter-spacing: 10px;
+            transition: 0.4s;
+            box-shadow: 0 0 10px rgba(255,173,210,0.3);
+            font-weight: bold;
+        }
+        .enter-btn:hover { 
+            background: var(--pink); 
+            color: black; 
+            box-shadow: 0 0 30px var(--pink);
+            transform: scale(1.1);
         }
 
-        /* 2. 角色選擇介面 (清單圖背景已包含角色) */
+        /* 2. 角色選擇介面 (清單圖) */
         #selector-screen { 
             background-image: url('selector_bg.jpg'); 
             flex-direction: column;
@@ -39,9 +57,25 @@
             align-items: center;
         }
 
-        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 1px solid var(--pink); z-index: 5; }
-        .menu-item { font-size: 1.4em; letter-spacing: 5px; cursor: pointer; color: #fff; transition: 0.3s; font-weight: bold; }
-        .menu-item:hover { color: var(--pink); text-shadow: 0 0 10px var(--pink); }
+        .menu-bar { 
+            width: 100%; 
+            background: rgba(0, 0, 0, 0.75); 
+            display: flex; 
+            justify-content: center; 
+            gap: 50px; 
+            padding: 30px 0; 
+            border-top: 1px solid var(--pink); 
+            z-index: 5; 
+        }
+        .menu-item { 
+            font-size: 1.5em; 
+            letter-spacing: 5px; 
+            cursor: pointer; 
+            color: #fff; 
+            transition: 0.3s; 
+            font-weight: bold; 
+        }
+        .menu-item:hover { color: var(--pink); text-shadow: 0 0 15px var(--pink); }
 
         /* 3. 過場圖 */
         #intro-screen { background-color: #000; justify-content: center; align-items: center; }
@@ -49,9 +83,31 @@
 
         /* 4. 遊戲劇情畫面 */
         #game-screen { justify-content: flex-end; flex-direction: column; align-items: center; }
-        #dialogue-ui { width: 85%; max-width: 900px; background: rgba(15,15,15,0.95); border: 2px solid var(--pink); border-radius: 12px; padding: 25px; margin-bottom: 50px; cursor: pointer; z-index: 10; position: relative; }
-        #char-name { position: absolute; top: -20px; left: 20px; background: var(--pink); color: #000; padding: 5px 20px; font-weight: bold; border-radius: 5px; }
-        #text-content { font-size: 1.25em; line-height: 1.8; min-height: 80px; letter-spacing: 1px; }
+        #dialogue-ui { 
+            width: 85%; 
+            max-width: 900px; 
+            background: rgba(10, 10, 10, 0.95); 
+            border: 2px solid var(--pink); 
+            border-radius: 12px; 
+            padding: 30px; 
+            margin-bottom: 50px; 
+            cursor: pointer; 
+            z-index: 10; 
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        #char-name { 
+            position: absolute; 
+            top: -22px; 
+            left: 25px; 
+            background: var(--pink); 
+            color: #000; 
+            padding: 6px 25px; 
+            font-weight: bold; 
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+        #text-content { font-size: 1.3em; line-height: 1.8; min-height: 80px; letter-spacing: 1.5px; }
     </style>
 </head>
 <body>

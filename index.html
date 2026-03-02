@@ -7,7 +7,6 @@
         :root { --pink: #ffadd2; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; color: white; }
         
-        /* 核心畫面容器 */
         .screen { 
             position: absolute; 
             width: 100vw; 
@@ -16,40 +15,32 @@
             background-size: cover; 
             background-position: center; 
             background-repeat: no-repeat;
-            transition: opacity 0.8s ease-in-out; 
+            background-color: #000; /* 沒圖時保底黑色 */
         }
         .active { display: flex; opacity: 1; }
 
-        /* 1. 開場封面頁面 - 強制鋪滿背景 */
+        /* 1. 封面 */
         #start-screen { 
             background-image: url('cover.jpg'); 
             flex-direction: column; 
-            justify-content: center; 
+            justify-content: flex-end; 
             align-items: center;
         }
         
-        /* ENTER 按鈕 - 加上發光與呼吸感 */
         .enter-btn { 
-            margin-top: 250px; /* 如果擋到標題，可以改這個數字 */
-            padding: 15px 80px; 
+            margin-bottom: 80px;
+            padding: 15px 60px; 
             border: 2px solid var(--pink); 
             background: rgba(0,0,0,0.6); 
             color: var(--pink); 
-            font-size: 1.8em;
+            font-size: 1.5em;
             cursor: pointer; 
             letter-spacing: 10px;
-            transition: 0.4s;
-            box-shadow: 0 0 10px rgba(255,173,210,0.3);
-            font-weight: bold;
+            transition: 0.3s;
         }
-        .enter-btn:hover { 
-            background: var(--pink); 
-            color: black; 
-            box-shadow: 0 0 30px var(--pink);
-            transform: scale(1.1);
-        }
+        .enter-btn:hover { background: var(--pink); color: black; box-shadow: 0 0 20px var(--pink); }
 
-        /* 2. 角色選擇介面 (清單圖) */
+        /* 2. 角色選擇 (清單圖) */
         #selector-screen { 
             background-image: url('selector_bg.jpg'); 
             flex-direction: column;
@@ -57,57 +48,18 @@
             align-items: center;
         }
 
-        .menu-bar { 
-            width: 100%; 
-            background: rgba(0, 0, 0, 0.75); 
-            display: flex; 
-            justify-content: center; 
-            gap: 50px; 
-            padding: 30px 0; 
-            border-top: 1px solid var(--pink); 
-            z-index: 5; 
-        }
-        .menu-item { 
-            font-size: 1.5em; 
-            letter-spacing: 5px; 
-            cursor: pointer; 
-            color: #fff; 
-            transition: 0.3s; 
-            font-weight: bold; 
-        }
-        .menu-item:hover { color: var(--pink); text-shadow: 0 0 15px var(--pink); }
+        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; gap: 30px; padding: 20px 0; border-top: 1px solid var(--pink); }
+        .menu-item { font-size: 1.3em; letter-spacing: 5px; cursor: pointer; font-weight: bold; }
+        .menu-item:hover { color: var(--pink); }
 
         /* 3. 過場圖 */
-        #intro-screen { background-color: #000; justify-content: center; align-items: center; }
-        #intro-img { max-height: 90%; max-width: 90%; object-fit: contain; }
+        #intro-screen { background-image: url('zhou_intro.jpg'); }
 
-        /* 4. 遊戲劇情畫面 */
+        /* 4. 遊戲畫面 */
         #game-screen { justify-content: flex-end; flex-direction: column; align-items: center; }
-        #dialogue-ui { 
-            width: 85%; 
-            max-width: 900px; 
-            background: rgba(10, 10, 10, 0.95); 
-            border: 2px solid var(--pink); 
-            border-radius: 12px; 
-            padding: 30px; 
-            margin-bottom: 50px; 
-            cursor: pointer; 
-            z-index: 10; 
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-        #char-name { 
-            position: absolute; 
-            top: -22px; 
-            left: 25px; 
-            background: var(--pink); 
-            color: #000; 
-            padding: 6px 25px; 
-            font-weight: bold; 
-            border-radius: 5px;
-            font-size: 1.1em;
-        }
-        #text-content { font-size: 1.3em; line-height: 1.8; min-height: 80px; letter-spacing: 1.5px; }
+        #dialogue-ui { width: 80%; max-width: 800px; background: rgba(10, 10, 10, 0.9); border: 2px solid var(--pink); border-radius: 10px; padding: 25px; margin-bottom: 40px; cursor: pointer; position: relative; }
+        #char-name { position: absolute; top: -18px; left: 20px; background: var(--pink); color: #000; padding: 4px 20px; font-weight: bold; border-radius: 4px; }
+        #text-content { font-size: 1.2em; line-height: 1.6; min-height: 60px; }
     </style>
 </head>
 <body>
@@ -125,8 +77,7 @@
     </div>
 
     <div id="intro-screen" class="screen">
-        <img id="intro-img" src="zhou_intro.jpg">
-    </div>
+        </div>
 
     <div id="game-screen" class="screen">
         <div id="dialogue-ui" onclick="handleNextClick()">
@@ -191,7 +142,8 @@
 
     function switchScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        document.getElementById(id).style.display = 'flex';
+        setTimeout(() => document.getElementById(id).classList.add('active'), 10);
     }
 </script>
 </body>

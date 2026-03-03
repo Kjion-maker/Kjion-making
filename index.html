@@ -10,47 +10,44 @@
         .screen { 
             position: absolute; width: 100vw; height: 100vh; 
             display: none; /* 預設隱藏 */
-            background-size: cover; background-position: center; 
-            background-repeat: no-repeat; background-color: #000; 
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            justify-content: center; align-items: center;
         }
-        /* 被啟動的畫面直接顯示 */
+
+        /* 強制顯示當前畫面 */
         .active { display: flex !important; }
 
-        #start-screen { 
-            background-image: url('0.jpg'); 
-            flex-direction: column; justify-content: flex-end; align-items: center; cursor: pointer;
-        }
-        
-        .hint-text { margin-bottom: 80px; font-size: 1.2em; letter-spacing: 5px; color: rgba(255, 255, 255, 0.7); animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        #start-screen { background-image: url('0.jpg'); cursor: pointer; flex-direction: column; justify-content: flex-end; }
+        .hint-text { margin-bottom: 80px; font-size: 1.5em; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #000; pointer-events: none; }
 
-        #selector-screen { background-image: url('selector_bg.jpg'); flex-direction: column; justify-content: flex-end; align-items: center; }
-        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 1.5px solid #d4af37; }
-        .menu-item { font-size: 1.4em; letter-spacing: 5px; cursor: pointer; font-weight: bold; }
+        #selector-screen { background-image: url('selector_bg.jpg'); flex-direction: column; justify-content: flex-end; }
+        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 2px solid #d4af37; }
+        .menu-item { font-size: 1.4em; cursor: pointer; font-weight: bold; color: #fff; transition: 0.2s; }
+        .menu-item:hover { color: var(--pink); transform: scale(1.1); }
 
-        #game-screen { justify-content: flex-end; flex-direction: column; align-items: center; }
+        #game-screen { justify-content: flex-end; flex-direction: column; }
         #dialogue-ui { 
-            width: 85%; max-width: 900px; background: rgba(25, 15, 15, 0.9); 
-            border: 1.5px solid #d4af37; border-radius: 15px; padding: 30px; 
+            width: 85%; max-width: 900px; background: rgba(20, 10, 10, 0.9); 
+            border: 2px solid #d4af37; border-radius: 15px; padding: 30px; 
             margin-bottom: 50px; cursor: pointer; position: relative;
         }
         #char-name { 
-            position: absolute; top: -22px; left: 30px; 
-            background: rgba(245, 245, 220, 0.95); color: #4a3728; 
-            padding: 6px 25px; font-weight: bold; border-radius: 10px; border: 1px solid #d4af37;
+            position: absolute; top: -20px; left: 30px; 
+            background: #f5f5dc; color: #4a3728; 
+            padding: 5px 25px; font-weight: bold; border-radius: 10px; border: 1px solid #d4af37;
         }
-        #text-content { font-size: 1.3em; line-height: 1.8; min-height: 80px; }
+        #text-content { font-size: 1.3em; line-height: 1.6; min-height: 80px; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div id="start-screen" class="screen active" onclick="switchScreen('selector-screen')">
-        <div class="hint-text">- CLICK TO START -</div>
+    <div id="start-screen" class="screen active" onclick="goToSelector()">
+        <div class="hint-text">CLICK TO START</div>
     </div>
 
     <div id="selector-screen" class="screen">
         <div class="menu-bar">
-            <div class="menu-item" onclick="playZhouMiao()">START</div>
+            <div class="menu-item" onclick="playZhouMiao(event)">START</div>
             <div class="menu-item" style="opacity: 0.3;">LOAD</div>
             <div class="menu-item" style="opacity: 0.3;">SETTINGS</div>
         </div>
@@ -59,7 +56,7 @@
     <div id="intro-screen" class="screen" style="background-image: url('zhou_intro.jpg');"></div>
 
     <div id="game-screen" class="screen">
-        <div id="dialogue-ui" onclick="handleNextClick()">
+        <div id="dialogue-ui" onclick="handleNextClick(event)">
             <div id="char-name">系統</div>
             <div id="text-content"></div>
         </div>
@@ -68,8 +65,6 @@
 <script>
     const zhouScript = [
         { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，雨聲像沒完沒了的碎玻璃。", bg: "rain_night.jpg" },
-        { name: "??", text: "奇怪的人......", bg: "rain_night.jpg" },
-        { name: "旁白", text: "放學後，你到周渺就讀的高中找他。", bg: "school_track.jpg" },
         { name: "周渺", text: "姐姐......你不要我了嗎？", bg: "school_track.jpg" }
     ];
 
@@ -78,13 +73,29 @@
     let typingTimer;
     let currentFullText = "";
 
-    function switchScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const next = document.getElementById(id);
-        if (next) next.classList.add('active');
+    // 專屬封面跳轉函式
+    function goToSelector() {
+        console.log("進入角色選擇");
+        switchScreen('selector-screen');
     }
 
-    function playZhouMiao() {
+    // 核心切換函式
+    function switchScreen(id) {
+        // 隱藏所有畫面
+        const screens = document.querySelectorAll('.screen');
+        screens.forEach(s => s.classList.remove('active'));
+        
+        // 顯示目標畫面
+        const target = document.getElementById(id);
+        if (target) {
+            target.classList.add('active');
+        } else {
+            console.error("找不到 ID 為 " + id + " 的畫面");
+        }
+    }
+
+    function playZhouMiao(event) {
+        event.stopPropagation(); // 防止點擊事件冒泡
         switchScreen('intro-screen');
         setTimeout(() => {
             switchScreen('game-screen');
@@ -128,7 +139,8 @@
         clearInterval(typingTimer);
     }
 
-    function handleNextClick() {
+    function handleNextClick(event) {
+        event.stopPropagation();
         if (isTyping) finishTyping();
         else startDialogue();
     }

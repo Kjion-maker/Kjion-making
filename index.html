@@ -3,67 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>練愛 Practice of Love</title>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --main-gold: #d4af37; --text-color: #444; }
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Zhi Mang Xing', cursive, "Microsoft JhengHei", sans-serif; background: #000; }
+        :root { --main-gold: #d4af37; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background: #000; }
         
         .screen { 
             position: absolute; width: 100vw; height: 100vh; 
             background-size: cover; background-position: center; display: none;
-            opacity: 0; transition: opacity 1.2s ease;
+            opacity: 0; transition: opacity 1s ease;
         }
         .active { display: flex !important; opacity: 1; z-index: 10; }
 
-        /* 下雨特效層 */
+        /* 下雨特效 */
         #rain-overlay {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 5;
             display: none; background: rgba(0, 0, 0, 0.1);
         }
         .rain {
             width: 100%; height: 100%;
-            background-image: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-            background-size: 2px 400px;
-            animation: rain-fall 0.7s linear infinite;
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            background-size: 1.5px 500px;
+            animation: rain-fall 0.6s linear infinite;
         }
-        @keyframes rain-fall { 0% { background-position: 0px -400px; } 100% { background-position: 30px 800px; } }
+        @keyframes rain-fall { 0% { background-position: 0px -500px; } 100% { background-position: 20px 1000px; } }
 
-        /* 選單介面 */
-        .menu-container { background: rgba(255,255,255,0.9); padding: 40px; border-radius: 30px; text-align: center; color: var(--text-color); border: 2px solid var(--main-gold); }
-        .char-btn { padding: 10px 25px; margin: 10px; font-size: 1.2em; cursor: pointer; border-radius: 20px; border: 1.5px solid var(--main-gold); background: white; color: var(--main-gold); transition: 0.3s; font-family: inherit; }
-        .char-btn:hover { background: var(--main-gold); color: white; }
-
-        /* --- 復刻 PDF 樣式的對話框 --- */
-        #game-screen { justify-content: flex-end; flex-direction: column; align-items: center; }
+        /* --- 復刻 PDF: 長方形、貼底、強磨砂感對話框 --- */
+        #game-screen { justify-content: flex-end; align-items: center; }
         #dialogue-ui { 
-            width: 75%; /* 縮小寬度 */
-            max-width: 850px;
-            background: rgba(255, 255, 255, 0.85); /* 提升透明感 */
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 15px; /* 更方圓一點 */
-            padding: 25px 40px; /* 縮減內距，讓對話框變薄 */
-            margin-bottom: 30px; /* 壓低位置，不擋場景 */
-            cursor: pointer; position: relative; z-index: 20;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            width: 100%; 
+            height: 230px; 
+            background: rgba(255, 255, 255, 0.65); /* 降低透明度提升磨砂感 */
+            backdrop-filter: blur(35px) saturate(160%); /* 極強磨砂效果 */
+            -webkit-backdrop-filter: blur(35px) saturate(160%);
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 30px 10%; 
+            box-sizing: border-box;
+            position: relative; z-index: 20;
+            cursor: pointer;
+            display: flex; flex-direction: column;
         }
         #char-name { 
-            position: absolute; top: -18px; left: 30px; 
             background: var(--main-gold); color: white; 
-            padding: 5px 25px; font-weight: bold; border-radius: 15px; 
-            font-size: 1.1em; letter-spacing: 2px;
+            padding: 5px 20px; border-radius: 0; /* 純長方形 */
+            font-size: 1.1em; font-weight: bold;
+            display: inline-block; align-self: flex-start;
+            margin-bottom: 15px; letter-spacing: 2px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         }
         #text-content { 
-            font-size: 1.5em; /* 字體放大一點 */
-            line-height: 1.6; 
-            min-height: 60px; /* 高度變矮 */
-            color: var(--text-color); 
-            letter-spacing: 1.5px;
-            font-weight: 500;
-            text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.05);
+            font-size: 1.45em; line-height: 1.8; color: #222; 
+            letter-spacing: 1.5px; font-weight: 500;
         }
-        .opt-btn { width: 100%; padding: 12px; margin-top: 8px; background: white; border: 1.5px solid var(--main-gold); border-radius: 10px; cursor: pointer; font-size: 1.1em; font-family: inherit; color: var(--main-gold); }
+
+        /* 選項 */
+        .opt-container { width: 420px; position: absolute; bottom: 260px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 12px; z-index: 30; }
+        .opt-btn { padding: 16px; background: white; border: 1.5px solid var(--main-gold); border-radius: 4px; cursor: pointer; font-size: 1.1em; font-weight: bold; color: var(--main-gold); transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .opt-btn:hover { background: var(--main-gold); color: white; }
+
+        /* 選單介面 */
+        .menu-btn { padding: 12px 40px; margin: 10px; font-size: 1.1em; cursor: pointer; border: 1.5px solid var(--main-gold); background: white; color: var(--main-gold); font-weight: bold; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -71,68 +70,64 @@
     <div id="rain-overlay"><div class="rain"></div></div>
 
     <div id="start-screen" class="screen active" style="background-image: url('0.jpg');" onclick="switchScreen('selector-screen')">
-        <div style="position: absolute; bottom: 60px; width: 100%; text-align: center; color: white; letter-spacing: 5px; font-size: 1.5em;">點擊開始</div>
+        <div style="position: absolute; bottom: 50px; width: 100%; text-align: center; color: white;">[ 點擊開始遊戲 ]</div>
     </div>
 
     <div id="selector-screen" class="screen" style="background-image: url('selector_bg.jpg'); justify-content: center; align-items: center;">
-        <div class="menu-container">
-            <h3 style="font-size: 1.8em; margin-top: 0;">選擇攻略對象</h3>
-            <button class="char-btn" onclick="showIntro('zhou')">周 渺</button><br>
-            <button class="char-btn" style="opacity:0.4;">夏 鏡</button>
-            <button class="char-btn" style="opacity:0.4;">沈 晏</button>
+        <div style="background: rgba(255,255,255,0.8); padding: 40px; text-align: center; border-radius: 10px;">
+            <h2 style="margin-bottom: 25px;">選擇攻略對象</h2>
+            <button class="menu-btn" onclick="showIntro()">周 渺</button><br>
+            <button class="menu-btn" style="opacity:0.5;">夏 鏡 (未開放)</button>
         </div>
     </div>
 
     <div id="zhou-intro-screen" class="screen" style="background-image: url('zhou_intro.jpg'); justify-content: center; align-items: center;">
-        <div class="menu-container" style="max-width: 350px;">
-            <h2 style="font-size: 2.2em; color: var(--main-gold);">周 渺</h2>
-            <p>「別把我當成小孩...」</p>
-            <button class="char-btn" onclick="startStory()">進入劇情</button>
-            <button class="char-btn" onclick="switchScreen('selector-screen')">返回</button>
+        <div style="background: rgba(255,255,255,0.8); padding: 40px; max-width: 350px; text-align: center; border-radius: 10px;">
+            <h1 style="color: var(--main-gold);">周 渺</h1>
+            <p>「別把我當小孩...我是真的在看著妳。」</p>
+            <button class="menu-btn" onclick="startStory()">開始故事</button>
+            <button class="menu-btn" style="border:none;" onclick="switchScreen('selector-screen')">返回</button>
         </div>
     </div>
 
     <div id="game-screen" class="screen">
+        <div id="opt-box" class="opt-container"></div>
         <div id="dialogue-ui" onclick="handleNext()">
             <div id="char-name"></div>
             <div id="text-content"></div>
-            <div id="opt-box"></div>
         </div>
     </div>
 
 <script>
     const story = [
         // --- 雨夜 (P1-P17) ---
-        { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。一如往常，你走在那條熟悉的路上，準備回家。", bg: "rain_night.jpg", rain: true },
-        { name: "旁白", text: "倏忽，一聲語氣強烈的咒罵穿透了雨幕，落入耳中，隨即是幾記沉悶的碰撞聲，像拳頭砸在肉上，伴隨微弱幾不可察的悶哼。", bg: "rain_night.jpg", rain: true },
-        { name: "旁白", text: "緩緩走上前去，巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他那一頭張揚的金髮被雨打濕，貼在額前，校服白襯衫凌亂、沾著灰，唇角破裂滲著紅，格外醒目。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", bg: "rain_night.jpg", rain: true },
+        { name: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他那一頭張揚的金髮被雨打濕，貼在額前。", bg: "alley_night.jpg", rain: true },
         { name: "Y/N", text: "「住手，我已經報警了！」", bg: "alley_night.jpg", rain: true },
-        { name: "??", text: "「......多管閒事。」", bg: "alley_night.jpg", rain: true },
-        { name: "旁白", text: "你不理會他不耐煩的語氣，蹲下與之平視，檢查他的傷勢。「嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」", bg: "alley_night.jpg", rain: true },
-        { name: "??", text: "「別碰我。」他縮了一下，眼神充滿防備。", bg: "alley_night.jpg", rain: true },
-        { name: "??", text: "「奇怪的人......」他看著妳的身影喃喃自語。", bg: "alley_night.jpg", rain: true },
+        { name: "周渺", text: "「......多管閒事。」他低著頭，聲音冷得像冰。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，但堅定地握住他的手腕。", bg: "alley_night.jpg", rain: true },
+        { name: "周渺", text: "「奇怪的人......」他看著妳的身影喃喃自語。", bg: "alley_night.jpg", rain: true },
 
-        // --- 操場 (P18-P29) ---
-        { name: "旁白", text: "夕陽把操場暈染成柔和的橘金色，光線像被刻意放慢，輕輕鋪在跑道與草地上。空氣瀰漫溫柔和靜謐，讓人不自覺放慢呼吸。", bg: "school_track.jpg", rain: false },
-        { name: "旁白", text: "放學後，你到高中找周渺。他偶爾偷看你，又迅速移開視線，耳尖在夕光中微微發紅。", bg: "school_track.jpg" },
-        { name: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」", bg: "school_track.jpg" },
+        // --- 操場夕陽 (P18-P29) ---
+        { name: "旁白", text: "夕陽把操場暈染成柔和的橘金色，空氣瀰漫溫柔和靜謐。放學後，你到高中找周渺。", bg: "school_track.jpg", rain: false },
+        { name: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」你輕笑著說。", bg: "school_track.jpg" },
         { name: "周渺", text: "「怎麼又提起來、別逗我了......姐姐。」他侷促地低頭。", bg: "school_track.jpg" },
+        { name: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」", bg: "school_track.jpg" },
         { name: "周渺", text: "「姐、姐姐......」他聲音細如蚊蚋。", bg: "school_track.jpg" },
-        { name: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」", bg: "school_track.jpg" },
-        { name: "周渺", text: "「姐姐......你不要我了嗎？」他慌張地抓住你的衣角，眼神充滿祈求。", bg: "school_track.jpg" },
 
-        // --- 夜景街道 (P30-P35 完整補齊) ---
-        { name: "旁白", text: "夜幕降臨，街道兩旁的霓虹燈開始閃爍。周渺停下腳步，擋在妳面前，路燈將他的影子拉得破碎。", bg: "street_night.jpg", rain: false },
+        // --- 夜景街道 (P30-P35) 正確轉場與台詞 ---
+        { name: "旁白", text: "夜幕降臨，街道燈火闌珊。氣氛突然變得凝重，妳停下腳步，轉頭看向他。", bg: "street_night.jpg", rain: false },
+        { name: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」", bg: "street_night.jpg" },
+        { name: "周渺", text: "「姐姐......你不要我了嗎？」他慌張地抓住你的衣角，眼神滿是絕望。", bg: "street_night.jpg" },
         { name: "周渺", text: "「妳總是這樣...輕易地決定我的未來。那妳有沒有想過，我的未來裡如果沒有妳，還算什麼未來？」", bg: "street_night.jpg" },
-        { name: "周渺", text: "「我努力考上理想的學校，努力變得成熟，都是為了能站在妳身邊啊！」", bg: "street_night.jpg" },
         { name: "周渺", text: "「Y/N，別再把我當小孩了。這不是一小段路，這是我的人生。」", bg: "street_night.jpg" },
-        { name: "周渺", text: "「姐姐，別再推開我了，好嗎？」他聲音微顫，帶著哀求。", bg: "street_night.jpg" },
+        { name: "周渺", text: "「姐姐，別再推開我了，好嗎？」他緊緊凝視著妳。", bg: "street_night.jpg" },
         { 
             name: "抉擇", 
             text: "在冷清的街道燈火下，妳的回答是？", 
             options: [
-                { text: "回抱住他", reaction: "他激動地抱住妳。", nextIndex: 21 },
-                { text: "狠心離開", reaction: "妳沒回頭，消失在霓虹中。", nextIndex: 22 }
+                { text: "接受他", reaction: "他激動地擁抱妳。", nextIndex: 18 },
+                { text: "拒絕他", reaction: "妳轉身離開。", nextIndex: 19 }
             ]
         },
         { name: "周渺", text: "「只要妳不走...要我做什麼都可以。」", bg: "street_night.jpg", end: true },
@@ -148,7 +143,7 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
-    function showIntro(char) { switchScreen('zhou-intro-screen'); }
+    function showIntro() { switchScreen('zhou-intro-screen'); }
     function startStory() { step = 0; switchScreen('game-screen'); playNext(); }
 
     function playNext() {
@@ -204,3 +199,4 @@
 </script>
 </body>
 </html>
+

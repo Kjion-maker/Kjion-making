@@ -7,51 +7,49 @@
         :root { --pink: #ffadd2; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; color: white; }
         
-        /* 核心轉場設定 */
+        /* 1. 基礎畫面設定 */
         .screen { 
             position: absolute; width: 100vw; height: 100vh; 
             background-size: cover; background-position: center; background-repeat: no-repeat;
             display: flex; flex-direction: column;
             
-            /* 轉場動畫關鍵：使用 opacity 和 visibility */
+            /* 預設狀態：完全透明 */
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 1.2s ease, visibility 1.2s;
+            pointer-events: none; /* 透明時不可點擊，防止誤觸 */
+            transition: opacity 1.5s ease-in-out; /* 增加到 1.5 秒，效果更明顯 */
             z-index: 1;
         }
 
-        /* 啟動狀態：透明度變 1，且可以被點擊 */
+        /* 2. 啟動狀態：漸變顯現 */
         .active { 
-            opacity: 1 !important; 
-            visibility: visible !important;
+            opacity: 1; 
+            pointer-events: auto; /* 顯現後恢復點擊功能 */
             z-index: 10;
         }
 
-        /* 各畫面背景設定 */
+        /* 3. 介面樣式 (保留你之前的設計) */
         #start-screen { background-image: url('0.jpg'); cursor: pointer; justify-content: flex-end; align-items: center; }
         #selector-screen { background-image: url('selector_bg.jpg'); justify-content: flex-end; align-items: center; }
         #intro-screen { background-image: url('zhou_intro.jpg'); background-color: #000; justify-content: center; align-items: center; }
-        #game-screen { justify-content: flex-end; align-items: center; }
-
-        /* UI 元素樣式 */
-        .hint-text { margin-bottom: 80px; font-size: 1.5em; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #000; animation: blink 2s infinite; }
+        
+        .hint-text { margin-bottom: 80px; font-size: 1.5em; letter-spacing: 5px; color: #fff; text-shadow: 0 0 15px rgba(0,0,0,1); animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 2px solid #d4af37; }
-        .menu-item { font-size: 1.4em; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .menu-item:hover { color: var(--pink); transform: scale(1.1); }
+        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 2px solid #d4af37; }
+        .menu-item { font-size: 1.4em; cursor: pointer; font-weight: bold; transition: 0.3s; color: #fff; }
+        .menu-item:hover { color: var(--pink); transform: scale(1.05); }
 
         #dialogue-ui { 
-            width: 85%; max-width: 900px; background: rgba(25, 15, 15, 0.95); 
-            border: 2px solid #d4af37; border-radius: 15px; padding: 30px; 
+            width: 85%; max-width: 900px; background: rgba(20, 10, 10, 0.95); 
+            border: 2px solid #d4af37; border-radius: 15px; padding: 35px; 
             margin-bottom: 50px; cursor: pointer; position: relative;
         }
         #char-name { 
-            position: absolute; top: -20px; left: 30px; 
-            background: #f5f5dc; color: #4a3728; 
-            padding: 5px 25px; font-weight: bold; border-radius: 10px; border: 1px solid #d4af37;
+            position: absolute; top: -22px; left: 35px; 
+            background: #fdf5e6; color: #4a3728; 
+            padding: 6px 28px; font-weight: bold; border-radius: 10px; border: 1.2px solid #d4af37;
         }
-        #text-content { font-size: 1.3em; line-height: 1.8; min-height: 80px; pointer-events: none; }
+        #text-content { font-size: 1.4em; line-height: 1.8; min-height: 85px; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -88,23 +86,32 @@
     let typingTimer;
     let currentFullText = "";
 
-    // 質感轉場：淡出當前，淡入下一個
+    // 核心轉場函式：這次增加了延遲觸發，確保動畫一定會跑
     function switchScreen(id) {
         const current = document.querySelector('.screen.active');
         const next = document.getElementById(id);
         
-        if (current) current.classList.remove('active');
-        if (next) next.classList.add('active');
+        if (current) {
+            current.classList.remove('active'); // 開始淡出
+        }
+        
+        if (next) {
+            // 給瀏覽器 50 毫秒的喘息時間，確保它知道要執行淡入動畫
+            setTimeout(() => {
+                next.classList.add('active');
+            }, 50);
+        }
     }
 
     function playZhouMiao(event) {
         if(event) event.stopPropagation();
         switchScreen('intro-screen');
         
+        // 過場圖停留久一點點
         setTimeout(() => {
             switchScreen('game-screen');
-            setTimeout(startDialogue, 1000); // 轉場完成後再開始跑字
-        }, 2000);
+            setTimeout(startDialogue, 1500); // 等遊戲畫面完全顯現後再開始跑字
+        }, 2500);
     }
 
     function startDialogue() {
@@ -151,3 +158,4 @@
 </script>
 </body>
 </html>
+

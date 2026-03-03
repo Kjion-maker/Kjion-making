@@ -7,27 +7,42 @@
         :root { --pink: #ffadd2; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; color: white; }
         
+        /* 核心轉場設定 */
         .screen { 
             position: absolute; width: 100vw; height: 100vh; 
-            display: none; /* 預設隱藏 */
             background-size: cover; background-position: center; background-repeat: no-repeat;
-            justify-content: center; align-items: center;
+            display: flex; flex-direction: column;
+            
+            /* 轉場動畫關鍵：使用 opacity 和 visibility */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.2s ease, visibility 1.2s;
+            z-index: 1;
         }
 
-        /* 強制顯示當前畫面 */
-        .active { display: flex !important; }
+        /* 啟動狀態：透明度變 1，且可以被點擊 */
+        .active { 
+            opacity: 1 !important; 
+            visibility: visible !important;
+            z-index: 10;
+        }
 
-        #start-screen { background-image: url('0.jpg'); cursor: pointer; flex-direction: column; justify-content: flex-end; }
-        .hint-text { margin-bottom: 80px; font-size: 1.5em; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #000; pointer-events: none; }
+        /* 各畫面背景設定 */
+        #start-screen { background-image: url('0.jpg'); cursor: pointer; justify-content: flex-end; align-items: center; }
+        #selector-screen { background-image: url('selector_bg.jpg'); justify-content: flex-end; align-items: center; }
+        #intro-screen { background-image: url('zhou_intro.jpg'); background-color: #000; justify-content: center; align-items: center; }
+        #game-screen { justify-content: flex-end; align-items: center; }
 
-        #selector-screen { background-image: url('selector_bg.jpg'); flex-direction: column; justify-content: flex-end; }
+        /* UI 元素樣式 */
+        .hint-text { margin-bottom: 80px; font-size: 1.5em; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #000; animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
         .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 2px solid #d4af37; }
-        .menu-item { font-size: 1.4em; cursor: pointer; font-weight: bold; color: #fff; transition: 0.2s; }
+        .menu-item { font-size: 1.4em; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .menu-item:hover { color: var(--pink); transform: scale(1.1); }
 
-        #game-screen { justify-content: flex-end; flex-direction: column; }
         #dialogue-ui { 
-            width: 85%; max-width: 900px; background: rgba(20, 10, 10, 0.9); 
+            width: 85%; max-width: 900px; background: rgba(25, 15, 15, 0.95); 
             border: 2px solid #d4af37; border-radius: 15px; padding: 30px; 
             margin-bottom: 50px; cursor: pointer; position: relative;
         }
@@ -36,12 +51,12 @@
             background: #f5f5dc; color: #4a3728; 
             padding: 5px 25px; font-weight: bold; border-radius: 10px; border: 1px solid #d4af37;
         }
-        #text-content { font-size: 1.3em; line-height: 1.6; min-height: 80px; pointer-events: none; }
+        #text-content { font-size: 1.3em; line-height: 1.8; min-height: 80px; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div id="start-screen" class="screen active" onclick="goToSelector()">
+    <div id="start-screen" class="screen active" onclick="switchScreen('selector-screen')">
         <div class="hint-text">CLICK TO START</div>
     </div>
 
@@ -53,7 +68,7 @@
         </div>
     </div>
 
-    <div id="intro-screen" class="screen" style="background-image: url('zhou_intro.jpg');"></div>
+    <div id="intro-screen" class="screen"></div>
 
     <div id="game-screen" class="screen">
         <div id="dialogue-ui" onclick="handleNextClick(event)">
@@ -73,34 +88,23 @@
     let typingTimer;
     let currentFullText = "";
 
-    // 專屬封面跳轉函式
-    function goToSelector() {
-        console.log("進入角色選擇");
-        switchScreen('selector-screen');
-    }
-
-    // 核心切換函式
+    // 質感轉場：淡出當前，淡入下一個
     function switchScreen(id) {
-        // 隱藏所有畫面
-        const screens = document.querySelectorAll('.screen');
-        screens.forEach(s => s.classList.remove('active'));
+        const current = document.querySelector('.screen.active');
+        const next = document.getElementById(id);
         
-        // 顯示目標畫面
-        const target = document.getElementById(id);
-        if (target) {
-            target.classList.add('active');
-        } else {
-            console.error("找不到 ID 為 " + id + " 的畫面");
-        }
+        if (current) current.classList.remove('active');
+        if (next) next.classList.add('active');
     }
 
     function playZhouMiao(event) {
-        event.stopPropagation(); // 防止點擊事件冒泡
+        if(event) event.stopPropagation();
         switchScreen('intro-screen');
+        
         setTimeout(() => {
             switchScreen('game-screen');
-            setTimeout(startDialogue, 500);
-        }, 1500);
+            setTimeout(startDialogue, 1000); // 轉場完成後再開始跑字
+        }, 2000);
     }
 
     function startDialogue() {
@@ -130,7 +134,7 @@
             } else {
                 finishTyping();
             }
-        }, 40);
+        }, 50);
     }
 
     function finishTyping() {
@@ -140,7 +144,7 @@
     }
 
     function handleNextClick(event) {
-        event.stopPropagation();
+        if(event) event.stopPropagation();
         if (isTyping) finishTyping();
         else startDialogue();
     }

@@ -14,61 +14,45 @@
         }
         .active { display: flex !important; opacity: 1; z-index: 10; }
 
-        /* --- 1. 角色選擇頁：隱形點擊區 --- */
-        .char-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); 
-            width: 100%; height: 100%;
-        }
-        .char-hitbox { 
-            cursor: pointer; background: transparent; transition: background 0.3s;
-        }
-        /* 測試時可以把透明度改為 0.1 看看位置對不對 */
-        .char-hitbox:hover { background: rgba(255,255,255,0.05); }
+        /* 角色選擇：四個隱形點擊區 */
+        .char-grid { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; height: 100%; }
+        .char-hitbox { cursor: pointer; background: transparent; }
 
-        /* --- 2. 角色介紹頁：純淨模式 --- */
-        .intro-trigger {
-            position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
-            width: 300px; height: 100px; cursor: pointer; background: transparent;
-        }
+        /* 介紹頁：底部隱形點擊區 */
+        .intro-trigger { position: absolute; bottom: 0; width: 100%; height: 30%; cursor: pointer; }
 
-        /* --- 3. 對話 UI：長方形貼底磨砂 --- */
+        /* 對話 UI：長方形、貼底、強磨砂 */
         #game-screen { justify-content: flex-end; align-items: flex-end; }
         #dialogue-ui { 
             width: 100%; 
-            height: 25%; /* 佔螢幕下方的 1/4 */
-            background: rgba(255, 255, 255, 0.65); 
-            backdrop-filter: blur(30px) saturate(160%);
-            -webkit-backdrop-filter: blur(30px) saturate(160%);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 30px 8%; 
+            height: 240px; 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(35px) saturate(160%);
+            -webkit-backdrop-filter: blur(35px) saturate(160%);
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 35px 8%; 
             box-sizing: border-box;
             position: absolute; bottom: 0; left: 0; z-index: 20;
             cursor: pointer;
         }
         #char-name { 
             background: var(--main-gold); color: white; 
-            padding: 4px 20px; font-size: 1.1em; font-weight: bold;
-            display: inline-block; margin-bottom: 15px; letter-spacing: 2px;
+            padding: 4px 20px; font-size: 1.15em; font-weight: bold;
+            display: inline-block; margin-bottom: 12px; letter-spacing: 2px;
         }
         #text-content { 
-            font-size: 1.5em; line-height: 1.6; color: #111; 
-            letter-spacing: 1.2px; font-weight: bold;
+            font-size: 1.5em; line-height: 1.7; color: #111; 
+            letter-spacing: 1.3px; font-weight: 700; /* 加粗解決清晰度問題 */
         }
 
         /* 選項 UI */
-        .opt-container { 
-            width: 100%; position: absolute; bottom: 26%; left: 0; 
-            display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 100; 
-        }
-        .opt-btn { 
-            width: 350px; padding: 15px; background: rgba(255,255,255,0.9); 
-            border: 2px solid var(--main-gold); cursor: pointer; 
-            font-size: 1.1em; font-weight: bold; color: var(--main-gold); 
-        }
+        .opt-container { width: 100%; position: absolute; bottom: 260px; left: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 100; }
+        .opt-btn { width: 380px; padding: 18px; background: rgba(255,255,255,0.95); border: 2px solid var(--main-gold); cursor: pointer; font-size: 1.2em; font-weight: bold; color: var(--main-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .opt-btn:hover { background: var(--main-gold); color: white; }
 
-        /* 特效 */
+        /* 下雨特效 */
         #rain-overlay { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 5; display: none; }
-        .rain { width: 100%; height: 100%; background-image: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%); background-size: 2px 400px; animation: rain-fall 0.6s linear infinite; }
+        .rain { width: 100%; height: 100%; background-image: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%); background-size: 2px 400px; animation: rain-fall 0.6s linear infinite; }
         @keyframes rain-fall { 0% { background-position: 0px -400px; } 100% { background-position: 20px 800px; } }
     </style>
 </head>
@@ -80,7 +64,11 @@
 
     <div id="selector-screen" class="screen" style="background-image: url('selector_bg.jpg');">
         <div class="char-grid">
-            <div class="char-hitbox" onclick="showIntro('zhou')"></div> <div class="char-hitbox"></div> <div class="char-hitbox"></div> <div class="char-hitbox"></div> </div>
+            <div class="char-hitbox" onclick="showIntro('zhou')"></div>
+            <div class="char-hitbox"></div>
+            <div class="char-hitbox"></div>
+            <div class="char-hitbox"></div>
+        </div>
     </div>
 
     <div id="zhou-intro-screen" class="screen" style="background-image: url('zhou_intro.jpg');">
@@ -97,26 +85,39 @@
 
 <script>
     const story = [
-        { name: "旁白", text: "城市下著雨，雨聲像沒完沒了的碎玻璃。你在巷口看見一名身著校服的少年...", bg: "alley_night.jpg", rain: true },
+        // --- P1-P17: 雨夜初遇 ---
+        { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", bg: "rain_night.jpg", rain: true },
+        { name: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他那一頭張揚的金髮被雨打濕，唇角滲著紅。", bg: "alley_night.jpg", rain: true },
         { name: "Y/N", text: "「住手，我已經報警了！」", bg: "alley_night.jpg", rain: true },
         { name: "周渺", text: "「......多管閒事。」他低著頭，聲音冷得像冰。", bg: "alley_night.jpg", rain: true },
-        { name: "旁白", text: "夕陽把操場暈染成柔和的橘金色。放學後，你到學校找周渺。", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "你不理會他不耐煩的語氣，蹲下與之平視。「嘴角破的蠻深的，你可能需要去醫院。」", bg: "alley_night.jpg", rain: true },
+        { name: "周渺", text: "「別碰我。」他縮了一下，眼神充滿防備。", bg: "alley_night.jpg", rain: true },
+        { name: "周渺", text: "「奇怪的人......」他看著妳遠去的背影喃喃自語。", bg: "alley_night.jpg", rain: true },
+
+        // --- P18-P29: 操場夕陽 ---
+        { name: "旁白", text: "夕陽把操場暈染成柔和的橘金色。放學後，你到高中找周渺。他偶爾偷看你，耳尖在夕光中微微發紅。", bg: "school_track.jpg", rain: false },
+        { name: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」", bg: "school_track.jpg" },
+        { name: "周渺", text: "「怎麼又提起來、別逗我了......姐姐。」他侷促地低頭。", bg: "school_track.jpg" },
         { name: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」", bg: "school_track.jpg" },
         { name: "周渺", text: "「姐、姐姐......」他聲音細如蚊蚋。", bg: "school_track.jpg" },
-        { name: "旁白", text: "夜幕降臨，街道霓虹閃爍。氣氛突然變得沉重，妳停下腳步。", bg: "street_night.jpg", rain: false },
+
+        // --- P30-P35: 夜景街道 (分手轉折) ---
+        { name: "旁白", text: "夜幕降臨，街道兩旁的霓虹燈開始閃爍。氣氛突然變得凝重，妳停下腳步。", bg: "street_night.jpg", rain: false },
         { name: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」", bg: "street_night.jpg" },
-        { name: "周渺", text: "「姐姐......你不要我了嗎？」他慌張地抓住你的衣角，眼神絕望。", bg: "street_night.jpg" },
-        { name: "周渺", text: "「那妳有沒有想過，我的未來裡如果沒有妳，還算什麼未來？」", bg: "street_night.jpg" },
+        { name: "周渺", text: "「姐姐......你不要我了嗎？」他慌張地抓住你的衣角，眼神充滿祈求。", bg: "street_night.jpg" },
+        { name: "周渺", text: "「妳總是這樣...輕易地決定我的未來。那妳有沒有想過，我的未來裡如果沒有妳，還算什麼未來？」", bg: "street_night.jpg" },
+        { name: "周渺", text: "「我努力考上理想的學校，努力變得成熟，都是為了能站在妳身邊啊！」", bg: "street_night.jpg" },
+        { name: "周渺", text: "「姐姐，別再推開我了，好嗎？」他聲音微顫，帶著哀求。", bg: "street_night.jpg" },
         { 
             name: "抉擇", 
-            text: "面對他的告白，妳的決定是？", 
+            text: "在冷清的街道燈火下，妳的回答是？", 
             options: [
-                { text: "回抱住他", reaction: "他激動地擁抱妳。", nextIndex: 11 },
-                { text: "狠心離開", reaction: "妳沒回頭。", nextIndex: 12 }
+                { text: "回抱住他", reaction: "他激動地緊緊擁抱住妳。", nextIndex: 19 },
+                { text: "狠心離開", reaction: "妳沒有回頭，消失在霓虹燈中。", nextIndex: 20 }
             ]
         },
         { name: "周渺", text: "「只要妳不走...要我做什麼都可以。」", bg: "street_night.jpg", end: true },
-        { name: "旁白", text: "夜風吹過，故事翻開了新的一頁。", bg: "street_night.jpg", end: true }
+        { name: "旁白", text: "你們的故事，在此刻翻開了新的一頁。", bg: "street_night.jpg", end: true }
     ];
 
     let step = 0; let isTyping = false; let typingTimer; let currentLine = null;
@@ -125,4 +126,56 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
-    function showIntro(char) { if(char==
+    function showIntro(char) { if(char==='zhou') switchScreen('zhou-intro-screen'); }
+    function startStory() { step = 0; switchScreen('game-screen'); playNext(); }
+
+    function playNext() {
+        if (step >= story.length) return;
+        currentLine = story[step];
+        document.getElementById('rain-overlay').style.display = currentLine.rain ? 'block' : 'none';
+        document.getElementById('char-name').innerText = currentLine.name;
+        document.getElementById('opt-box').innerHTML = "";
+        if (currentLine.bg) document.getElementById('game-screen').style.backgroundImage = `url('${currentLine.bg}')`;
+
+        if (currentLine.options) {
+            showOptions(currentLine);
+        } else {
+            typeText(currentLine.text);
+            step++;
+        }
+    }
+
+    function typeText(text) {
+        isTyping = true; let i = 0; const el = document.getElementById('text-content');
+        el.innerText = ""; clearInterval(typingTimer);
+        typingTimer = setInterval(() => {
+            if (i < text.length) { el.innerText += text[i++]; }
+            else { isTyping = false; clearInterval(typingTimer); }
+        }, 40);
+    }
+
+    function showOptions(line) {
+        document.getElementById('text-content').innerText = line.text;
+        const box = document.getElementById('opt-box');
+        line.options.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn'; b.innerText = opt.text;
+            b.onclick = (e) => { e.stopPropagation(); alert(opt.reaction); step = opt.nextIndex; playNext(); };
+            box.appendChild(b);
+        });
+    }
+
+    function handleNext() {
+        if (currentLine && currentLine.options) return;
+        if (isTyping) {
+            clearInterval(typingTimer);
+            document.getElementById('text-content').innerText = currentLine.text;
+            isTyping = false;
+        } else {
+            if (currentLine && currentLine.end) { location.reload(); }
+            else playNext();
+        }
+    }
+</script>
+</body>
+</html>

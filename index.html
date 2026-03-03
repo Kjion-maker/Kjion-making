@@ -111,26 +111,66 @@
     </div>
 
 <script>
-    // 轉場邏輯：增加淡入淡出效果
-    function switchScreen(id) {
-        const current = document.querySelector('.screen.active');
-        const next = document.getElementById(id);
-        
-        if (current) {
-            current.style.opacity = '0';
-            setTimeout(() => {
-                current.style.display = 'none';
-                current.classList.remove('active');
-                
-                next.style.display = 'flex';
-                // 觸發重繪讓 opacity 動畫生效
-                next.offsetHeight; 
-                next.classList.add('active');
-                next.style.opacity = '1';
-            }, 1000); // 等待淡出動畫完成
+    // ... 劇本 zhouScript 與變數設定維持不變 ...
+
+    let currentFullText = ""; // 新增：儲存當前整句文字
+
+    function startDialogue() {
+        if (step < zhouScript.length) {
+            const line = zhouScript[step];
+            const nameEl = document.querySelector('#char-name');
+            const screenEl = document.getElementById('game-screen');
+
+            if (nameEl) nameEl.innerText = line.name;
+            if (line.bg) screenEl.style.backgroundImage = `url('${line.bg}')`;
+
+            currentFullText = line.text; // 記錄完整文字
+            runTypeWriter(line.text);
+            step++;
+        } else {
+            alert("本章結束，即將返回主選單");
+            location.reload();
         }
     }
 
+    function runTypeWriter(text) {
+        isTyping = true;
+        const textEl = document.getElementById('text-content');
+        textEl.innerText = "";
+        let i = 0;
+        
+        clearInterval(typingTimer);
+        typingTimer = setInterval(() => {
+            if (i < text.length) {
+                textEl.innerText += text.charAt(i);
+                i++;
+            } else {
+                finishTyping();
+            }
+        }, 40);
+    }
+
+    // 新增：結束打字狀態的函式
+    function finishTyping() {
+        const textEl = document.getElementById('text-content');
+        textEl.innerText = currentFullText; // 確保顯示完整文字
+        isTyping = false;
+        clearInterval(typingTimer);
+    }
+
+    // 修正：點擊邏輯
+    function handleNextClick() {
+        if (isTyping) {
+            // 如果還在跑字，點擊後「立即顯示完整整句」
+            finishTyping();
+        } else {
+            // 如果字已經跑完，點擊後「進到下一句」
+            startDialogue();
+        }
+    }
+
+    // ... 其餘 switchScreen 等函式維持不變 ...
+</script>
     // 周渺劇情開始
     function playZhouMiao() {
         switchScreen('intro-screen');
@@ -178,3 +218,4 @@
 </script>
 </body>
 </html>
+

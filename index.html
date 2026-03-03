@@ -7,83 +7,37 @@
         :root { --pink: #ffadd2; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; color: white; }
         
-        /* 畫面轉場基礎設定 */
         .screen { 
-            position: absolute; 
-            width: 100vw; 
-            height: 100vh; 
-            display: none; 
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat;
-            background-color: #000;
-            opacity: 0; /* 預設透明，用來做淡入淡出 */
-            transition: opacity 1.2s ease; /* 增加轉場時間，更有氣氛 */
+            position: absolute; width: 100vw; height: 100vh; 
+            display: none; /* 預設隱藏 */
+            background-size: cover; background-position: center; 
+            background-repeat: no-repeat; background-color: #000; 
         }
-        .active { display: flex; opacity: 1; }
+        /* 被啟動的畫面直接顯示 */
+        .active { display: flex !important; }
 
-        /* 1. 開場封面 - 移除按鈕，改為全畫面手勢 */
         #start-screen { 
             background-image: url('0.jpg'); 
-            flex-direction: column; 
-            justify-content: flex-end; 
-            align-items: center; 
-            cursor: pointer; /* 鼠標移上去會變手指，提示可以點擊 */
+            flex-direction: column; justify-content: flex-end; align-items: center; cursor: pointer;
         }
         
-        /* 提示文字：淡淡的閃爍，不擋住男主角們 */
-        .hint-text {
-            margin-bottom: 80px;
-            font-size: 1.2em;
-            letter-spacing: 5px;
-            color: rgba(255, 255, 255, 0.7);
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            animation: blink 3s infinite;
-        }
+        .hint-text { margin-bottom: 80px; font-size: 1.2em; letter-spacing: 5px; color: rgba(255, 255, 255, 0.7); animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        @keyframes blink {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.8; }
-        }
+        #selector-screen { background-image: url('selector_bg.jpg'); flex-direction: column; justify-content: flex-end; align-items: center; }
+        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 1.5px solid #d4af37; }
+        .menu-item { font-size: 1.4em; letter-spacing: 5px; cursor: pointer; font-weight: bold; }
 
-        /* 2. 角色選擇 (清單圖) */
-        #selector-screen { 
-            background-image: url('selector_bg.jpg'); 
-            flex-direction: column; 
-            justify-content: flex-end; 
-            align-items: center; 
-        }
-
-        .menu-bar { 
-            width: 100%; 
-            background: rgba(0, 0, 0, 0.7); 
-            display: flex; 
-            justify-content: center; 
-            gap: 40px; 
-            padding: 25px 0; 
-            border-top: 1.5px solid #d4af37; 
-        }
-        .menu-item { font-size: 1.4em; letter-spacing: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .menu-item:hover { color: var(--pink); text-shadow: 0 0 10px var(--pink); }
-
-        /* 4. 遊戲劇情畫面 */
         #game-screen { justify-content: flex-end; flex-direction: column; align-items: center; }
         #dialogue-ui { 
-            width: 85%; max-width: 900px; 
-            background: rgba(25, 15, 15, 0.9); 
-            border: 1.5px solid #d4af37; 
-            border-radius: 15px; 
-            padding: 30px; 
-            margin-bottom: 50px; 
-            cursor: pointer; 
-            position: relative;
+            width: 85%; max-width: 900px; background: rgba(25, 15, 15, 0.9); 
+            border: 1.5px solid #d4af37; border-radius: 15px; padding: 30px; 
+            margin-bottom: 50px; cursor: pointer; position: relative;
         }
         #char-name { 
             position: absolute; top: -22px; left: 30px; 
-            background: rgba(245, 245, 220, 0.95); 
-            color: #4a3728; padding: 6px 25px; 
-            font-weight: bold; border-radius: 10px; 
-            border: 1px solid #d4af37;
+            background: rgba(245, 245, 220, 0.95); color: #4a3728; 
+            padding: 6px 25px; font-weight: bold; border-radius: 10px; border: 1px solid #d4af37;
         }
         #text-content { font-size: 1.3em; line-height: 1.8; min-height: 80px; }
     </style>
@@ -98,11 +52,12 @@
         <div class="menu-bar">
             <div class="menu-item" onclick="playZhouMiao()">START</div>
             <div class="menu-item" style="opacity: 0.3;">LOAD</div>
-            <div class="menu-item" style="opacity: 0.3; pointer-events: none;">SETTINGS</div>
+            <div class="menu-item" style="opacity: 0.3;">SETTINGS</div>
         </div>
     </div>
 
     <div id="intro-screen" class="screen" style="background-image: url('zhou_intro.jpg');"></div>
+
     <div id="game-screen" class="screen">
         <div id="dialogue-ui" onclick="handleNextClick()">
             <div id="char-name">系統</div>
@@ -111,24 +66,42 @@
     </div>
 
 <script>
-    // ... 劇本 zhouScript 與變數設定維持不變 ...
+    const zhouScript = [
+        { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，雨聲像沒完沒了的碎玻璃。", bg: "rain_night.jpg" },
+        { name: "??", text: "奇怪的人......", bg: "rain_night.jpg" },
+        { name: "旁白", text: "放學後，你到周渺就讀的高中找他。", bg: "school_track.jpg" },
+        { name: "周渺", text: "姐姐......你不要我了嗎？", bg: "school_track.jpg" }
+    ];
 
-    let currentFullText = ""; // 新增：儲存當前整句文字
+    let step = 0;
+    let isTyping = false;
+    let typingTimer;
+    let currentFullText = "";
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const next = document.getElementById(id);
+        if (next) next.classList.add('active');
+    }
+
+    function playZhouMiao() {
+        switchScreen('intro-screen');
+        setTimeout(() => {
+            switchScreen('game-screen');
+            setTimeout(startDialogue, 500);
+        }, 1500);
+    }
 
     function startDialogue() {
         if (step < zhouScript.length) {
             const line = zhouScript[step];
-            const nameEl = document.querySelector('#char-name');
-            const screenEl = document.getElementById('game-screen');
-
-            if (nameEl) nameEl.innerText = line.name;
-            if (line.bg) screenEl.style.backgroundImage = `url('${line.bg}')`;
-
-            currentFullText = line.text; // 記錄完整文字
+            document.querySelector('#char-name').innerText = line.name;
+            document.getElementById('game-screen').style.backgroundImage = `url('${line.bg}')`;
+            currentFullText = line.text;
             runTypeWriter(line.text);
             step++;
         } else {
-            alert("本章結束，即將返回主選單");
+            alert("本章結束");
             location.reload();
         }
     }
@@ -138,7 +111,6 @@
         const textEl = document.getElementById('text-content');
         textEl.innerText = "";
         let i = 0;
-        
         clearInterval(typingTimer);
         typingTimer = setInterval(() => {
             if (i < text.length) {
@@ -150,72 +122,16 @@
         }, 40);
     }
 
-    // 新增：結束打字狀態的函式
     function finishTyping() {
-        const textEl = document.getElementById('text-content');
-        textEl.innerText = currentFullText; // 確保顯示完整文字
+        document.getElementById('text-content').innerText = currentFullText;
         isTyping = false;
         clearInterval(typingTimer);
     }
 
-    // 修正：點擊邏輯
     function handleNextClick() {
-        if (isTyping) {
-            // 如果還在跑字，點擊後「立即顯示完整整句」
-            finishTyping();
-        } else {
-            // 如果字已經跑完，點擊後「進到下一句」
-            startDialogue();
-        }
+        if (isTyping) finishTyping();
+        else startDialogue();
     }
-
-    // ... 其餘 switchScreen 等函式維持不變 ...
-</script>
-    // 周渺劇情開始
-    function playZhouMiao() {
-        switchScreen('intro-screen');
-        setTimeout(() => {
-            switchScreen('game-screen');
-            startDialogue();
-        }, 2000);
-    }
-
-    const zhouScript = [
-        { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，雨聲像沒完沒了的碎玻璃。", bg: "rain_night.jpg" },
-        { name: "周渺", text: "姐姐......你不要我了嗎？", bg: "school_track.jpg" }
-    ];
-
-    let step = 0;
-    let isTyping = false;
-
-    function startDialogue() {
-        if (step < zhouScript.length) {
-            const line = zhouScript[step];
-            document.querySelector('#char-name').innerText = line.name;
-            document.getElementById('game-screen').style.backgroundImage = `url('${line.bg}')`;
-            runTypeWriter(line.text);
-            step++;
-        }
-    }
-
-    function runTypeWriter(text) {
-        isTyping = true;
-        const textEl = document.getElementById('text-content');
-        textEl.innerText = "";
-        let i = 0;
-        let timer = setInterval(() => {
-            if (i < text.length) {
-                textEl.innerText += text.charAt(i);
-                i++;
-            } else {
-                isTyping = false;
-                clearInterval(timer);
-            }
-        }, 50);
-    }
-
-    function handleNextClick() { if (!isTyping) startDialogue(); }
 </script>
 </body>
 </html>
-

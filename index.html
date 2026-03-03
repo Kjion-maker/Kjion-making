@@ -2,160 +2,192 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>練愛 Practice of Love</title>
+    <title>練愛 Practice of Love - 周渺完整篇</title>
     <style>
-        :root { --pink: #ffadd2; }
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; color: white; }
+        :root { --main-gold: #d4af37; --text-color: #333; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background: #000; }
         
-        /* 1. 基礎畫面設定 */
+        /* 畫面轉場 */
         .screen { 
             position: absolute; width: 100vw; height: 100vh; 
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            display: flex; flex-direction: column;
-            
-            /* 預設狀態：完全透明 */
-            opacity: 0;
-            pointer-events: none; /* 透明時不可點擊，防止誤觸 */
-            transition: opacity 1.5s ease-in-out; /* 增加到 1.5 秒，效果更明顯 */
-            z-index: 1;
+            background-size: cover; background-position: center; display: none;
+            opacity: 0; transition: opacity 1.5s ease;
+        }
+        .active { display: flex !important; opacity: 1; z-index: 10; }
+
+        /* --- 下雨特效 CSS --- */
+        #rain-overlay {
+            position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0; pointer-events: none; z-index: 5;
+            display: none; background: rgba(0, 0, 0, 0.1);
+        }
+        .rain {
+            width: 100%; height: 100%;
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            background-size: 2px 400px;
+            animation: rain-fall 0.7s linear infinite;
+        }
+        @keyframes rain-fall {
+            0% { background-position: 0px -400px; }
+            100% { background-position: 30px 800px; }
         }
 
-        /* 2. 啟動狀態：漸變顯現 */
-        .active { 
-            opacity: 1; 
-            pointer-events: auto; /* 顯現後恢復點擊功能 */
-            z-index: 10;
-        }
-
-        /* 3. 介面樣式 (保留你之前的設計) */
-        #start-screen { background-image: url('0.jpg'); cursor: pointer; justify-content: flex-end; align-items: center; }
-        #selector-screen { background-image: url('selector_bg.jpg'); justify-content: flex-end; align-items: center; }
-        #intro-screen { background-image: url('zhou_intro.jpg'); background-color: #000; justify-content: center; align-items: center; }
-        
-        .hint-text { margin-bottom: 80px; font-size: 1.5em; letter-spacing: 5px; color: #fff; text-shadow: 0 0 15px rgba(0,0,0,1); animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-        .menu-bar { width: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; gap: 40px; padding: 25px 0; border-top: 2px solid #d4af37; }
-        .menu-item { font-size: 1.4em; cursor: pointer; font-weight: bold; transition: 0.3s; color: #fff; }
-        .menu-item:hover { color: var(--pink); transform: scale(1.05); }
-
+        /* 對話 UI：白色磨砂玻璃 */
+        #game-screen { justify-content: flex-end; flex-direction: column; align-items: center; }
         #dialogue-ui { 
-            width: 85%; max-width: 900px; background: rgba(20, 10, 10, 0.95); 
-            border: 2px solid #d4af37; border-radius: 15px; padding: 35px; 
-            margin-bottom: 50px; cursor: pointer; position: relative;
+            width: 82%; max-width: 950px; background: rgba(255, 255, 255, 0.88); 
+            backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px; padding: 45px 50px; margin-bottom: 50px; 
+            cursor: pointer; position: relative; z-index: 20;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
         #char-name { 
-            position: absolute; top: -22px; left: 35px; 
-            background: #fdf5e6; color: #4a3728; 
-            padding: 6px 28px; font-weight: bold; border-radius: 10px; border: 1.2px solid #d4af37;
+            position: absolute; top: -25px; left: 50px; background: white; color: var(--main-gold); 
+            padding: 10px 40px; font-weight: bold; border-radius: 50px; font-size: 1.25em;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: 1px solid #f0f0f0;
         }
-        #text-content { font-size: 1.4em; line-height: 1.8; min-height: 85px; pointer-events: none; }
+        #text-content { font-size: 1.45em; line-height: 1.9; min-height: 100px; color: var(--text-color); letter-spacing: 1.2px; }
+
+        .opt-container { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .opt-btn { padding: 16px; background: white; border: 1px solid #e0e0e0; border-radius: 12px; cursor: pointer; font-size: 1.15em; transition: 0.3s; }
+        .opt-btn:hover { background: var(--main-gold); color: white; }
     </style>
 </head>
 <body>
 
+    <div id="rain-overlay"><div class="rain"></div></div>
+
     <div id="start-screen" class="screen active" onclick="switchScreen('selector-screen')">
-        <div class="hint-text">CLICK TO START</div>
+        <div style="margin-bottom:80px; color:white; letter-spacing:8px; cursor:pointer;">CLICK TO START</div>
     </div>
 
     <div id="selector-screen" class="screen">
-        <div class="menu-bar">
-            <div class="menu-item" onclick="playZhouMiao(event)">START</div>
-            <div class="menu-item" style="opacity: 0.3;">LOAD</div>
-            <div class="menu-item" style="opacity: 0.3;">SETTINGS</div>
+        <div style="background:rgba(0,0,0,0.6); padding:40px; border-radius:20px; text-align:center;">
+            <h2 style="color:white; margin-bottom:30px;">選擇角色</h2>
+            <button onclick="startStory()" style="padding:15px 60px; font-size:1.2em; cursor:pointer; background:white; border:none; border-radius:10px;">開始 周渺篇</button>
         </div>
     </div>
 
-    <div id="intro-screen" class="screen"></div>
-
     <div id="game-screen" class="screen">
-        <div id="dialogue-ui" onclick="handleNextClick(event)">
-            <div id="char-name">系統</div>
+        <div id="dialogue-ui" onclick="handleNext()">
+            <div id="char-name"></div>
             <div id="text-content"></div>
+            <div id="opt-box" class="opt-container"></div>
         </div>
     </div>
 
 <script>
-    const zhouScript = [
-        { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，雨聲像沒完沒了的碎玻璃。", bg: "rain_night.jpg" },
-        { name: "周渺", text: "姐姐......你不要我了嗎？", bg: "school_track.jpg" }
+    // 嚴格對照 PDF 35 頁內容
+    const story = [
+        { name: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。一如往常，你走在那條熟悉的路上，準備回家。", bg: "rain_night.jpg", rain: true },
+        { name: "旁白", text: "倏忽，一聲語氣強烈的咒罵穿透了雨幕，落入耳中，隨即是幾記沉悶的碰撞聲，像拳頭砸在肉上，伴隨微弱幾不可察的悶哼。", bg: "rain_night.jpg", rain: true },
+        { name: "旁白", text: "緩緩走上前去，巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他那一頭張揚的金髮被雨打濕，貼在額前，校服白襯衫凌亂、沾著灰，唇角破裂滲著紅，格外醒目。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "他呼吸急促，肩膀隨著疼痛微顫，但眼神依舊冷得像能把人隔絕在外。就在其中一人抬手要再揍下去時——", bg: "alley_night.jpg", rain: true },
+        { name: "Y/N", text: "「住手，我已經報警了！」", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "雨勢漸大，冷冷地敲打在地面與鐵皮上，聲音密得幾乎要淹沒整條巷道。幾聲帶著怒意的咒罵混雜在雨聲裡，一閃即逝得像被風吹散的碎片。朦朧的夜幕籠罩著整個街區，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", bg: "rain_night.jpg", rain: true },
+        { name: "??", text: "「......多管閒事。」他低著頭，聲音冷得像冰。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "你並沒有回應他帶著不耐煩的排斥，只是蹲下與之平視，檢查他的傷勢。「嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」", bg: "alley_night.jpg", rain: true },
+        { name: "??", text: "「別碰我。」他縮了一下，眼神充滿防備。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "他語氣強硬，動作也抗拒著，眼神仍帶著防備，雨水順著他的臉頰緩緩流淌，直至沒入了浸濕且沾染血污的白襯衫之中，不見了蹤影。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你蹙起了眉，放軟了語調，但堅定地握住他的手腕，不讓他再掙扎加重傷勢。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "「以後小心點，記得去醫院看看。」你簡單地包紮他的傷口後，站起身來，留下了一把備用傘給他，就轉身離去。", bg: "alley_night.jpg", rain: true },
+        { name: "??", text: "「奇怪的人......」他看著妳遠去的背影喃喃自語。", bg: "alley_night.jpg", rain: true },
+        { name: "旁白", text: "夕陽把操場暈染成柔和的橘金色，光線像被刻意放慢，輕輕鋪在跑道與草地上。樹影被拉得細長，隨著晚風微微晃動，空氣瀰漫溫柔和靜謐，讓人不自覺放慢呼吸。", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "放學後，你到周渺就讀的高中找他。你們並肩走進安靜的操場，跑道空曠而安靜，只剩下你們的腳步聲。他偶爾偷看你，又迅速移開視線，耳尖在夕光中微微發紅。", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "突然，一聲貓叫聲劃破了寧靜——", bg: "school_track.jpg", rain: false },
+        { name: "Y/N", text: "「哇，好可愛的貓咪......」", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "你伸出手想撫摸這隻小貓，卻被牠突然的叫喊嚇了一跳。", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "雖然你被嚇了一跳，但仍維持著蹲姿，放輕了聲音柔聲細語地道：「咪咪？沒事、我不會傷害你的。」而那隻小貓彷彿感受到你的善意，竟也乖順地蹭了蹭你的掌心。「好乖好乖哦...」", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "你放輕了力道，指腹順著牠柔軟的背毛慢慢滑過。小貓喉間發出細細的呼嚕聲。「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」你彎起了嘴角，輕笑著。", bg: "school_track.jpg", rain: false },
+        { name: "周渺", text: "「怎麼又提起來、別逗我了......姐姐。」他侷促地低頭，手指攪在一起。", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "見他害羞，你生起了作弄他的心思。「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」", bg: "school_track.jpg", rain: false },
+        { name: "周渺", text: "「姐、姐姐......」他聲音細如蚊蚋。", bg: "school_track.jpg", rain: false },
+        { name: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」你的聲音在微風中顯得有些飄渺。", bg: "school_track.jpg", rain: false },
+        { name: "周渺", text: "「姐姐......你不要我了嗎？」他慌張地抓住你的衣角，眼神清澈卻盛滿了絕望與祈求。", bg: "school_track.jpg", rain: false },
+        { name: "旁白", text: "「你還小，未來會遇到更多不同的人......」你試圖想說服他，分開對他來說是更明智的選擇，卻被他打斷——", bg: "school_track.jpg", rain: false },
+        { name: "周渺", text: "「Y/N，別再把我當小孩了。」他語氣突然變得執著。", bg: "school_track.jpg", rain: false },
+        { name: "Y/N", text: "「⋯⋯分開對我們來說都好。」你態度堅決，語氣也變得冷硬。", bg: "school_track.jpg", rain: false },
+        { 
+            name: "系統", 
+            text: "「姐姐、姐姐，不要丟下我⋯⋯」他慌張又無措地想伸手抓住你，試圖挽留⋯⋯你是否願意接受？", 
+            options: [
+                { text: "接受挽留", reaction: "他緊緊抱住你，彷彿擁抱著唯一的救贖。", nextIndex: 29 },
+                { text: "拒絕挽留", reaction: "你撥開了他的手，頭也不回地走向夕陽的另一端。", nextIndex: 30 }
+            ]
+        },
+        { name: "周渺", text: "「謝謝你......沒拋下我。」他把臉埋進妳的頸窩，聲音悶悶的，卻無比踏實。", bg: "school_track.jpg", end: true },
+        { name: "旁白", text: "夕陽最終沉入了地平線，妳的身影消失在操場盡頭，留下那道孤獨的身影獨自站在晚風中。", bg: "school_track.jpg", end: true }
     ];
 
     let step = 0;
     let isTyping = false;
     let typingTimer;
-    let currentFullText = "";
+    let currentLine = null;
 
-    // 核心轉場函式：這次增加了延遲觸發，確保動畫一定會跑
     function switchScreen(id) {
-        const current = document.querySelector('.screen.active');
-        const next = document.getElementById(id);
-        
-        if (current) {
-            current.classList.remove('active'); // 開始淡出
-        }
-        
-        if (next) {
-            // 給瀏覽器 50 毫秒的喘息時間，確保它知道要執行淡入動畫
-            setTimeout(() => {
-                next.classList.add('active');
-            }, 50);
-        }
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
 
-    function playZhouMiao(event) {
-        if(event) event.stopPropagation();
-        switchScreen('intro-screen');
-        
-        // 過場圖停留久一點點
-        setTimeout(() => {
-            switchScreen('game-screen');
-            setTimeout(startDialogue, 1500); // 等遊戲畫面完全顯現後再開始跑字
-        }, 2500);
+    function startStory() {
+        switchScreen('game-screen');
+        setTimeout(playNext, 1000);
     }
 
-    function startDialogue() {
-        if (step < zhouScript.length) {
-            const line = zhouScript[step];
-            document.querySelector('#char-name').innerText = line.name;
-            document.getElementById('game-screen').style.backgroundImage = `url('${line.bg}')`;
-            currentFullText = line.text;
-            runTypeWriter(line.text);
-            step++;
+    function playNext() {
+        if (step >= story.length) return;
+        currentLine = story[step];
+        
+        // 特效判斷
+        const rainOverlay = document.getElementById('rain-overlay');
+        rainOverlay.style.display = currentLine.rain ? 'block' : 'none';
+
+        document.getElementById('opt-box').innerHTML = "";
+        document.getElementById('char-name').innerText = currentLine.name;
+        if (currentLine.bg) document.getElementById('game-screen').style.backgroundImage = `url('${currentLine.bg}')`;
+
+        if (currentLine.options) {
+            showOptions(currentLine);
         } else {
-            alert("本章結束");
-            location.reload();
+            typeText(currentLine.text);
+            step++;
         }
     }
 
-    function runTypeWriter(text) {
+    function typeText(text) {
         isTyping = true;
-        const textEl = document.getElementById('text-content');
-        textEl.innerText = "";
         let i = 0;
+        const el = document.getElementById('text-content');
+        el.innerText = "";
         clearInterval(typingTimer);
         typingTimer = setInterval(() => {
-            if (i < text.length) {
-                textEl.innerText += text.charAt(i);
-                i++;
-            } else {
-                finishTyping();
-            }
-        }, 50);
+            if (i < text.length) { el.innerText += text[i++]; }
+            else { isTyping = false; clearInterval(typingTimer); }
+        }, 45);
     }
 
-    function finishTyping() {
-        document.getElementById('text-content').innerText = currentFullText;
-        isTyping = false;
-        clearInterval(typingTimer);
+    function showOptions(line) {
+        document.getElementById('text-content').innerText = line.text;
+        const box = document.getElementById('opt-box');
+        line.options.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn'; b.innerText = opt.text;
+            b.onclick = (e) => { e.stopPropagation(); alert(opt.reaction); step = opt.nextIndex; playNext(); };
+            box.appendChild(b);
+        });
     }
 
-    function handleNextClick(event) {
-        if(event) event.stopPropagation();
-        if (isTyping) finishTyping();
-        else startDialogue();
+    function handleNext() {
+        if (currentLine && currentLine.options) return;
+        if (isTyping) {
+            clearInterval(typingTimer);
+            document.getElementById('text-content').innerText = currentLine.text;
+            isTyping = false;
+        } else {
+            if (currentLine && currentLine.end) { alert("周渺篇 序章 完"); location.reload(); }
+            else playNext();
+        }
     }
 </script>
 </body>
 </html>
-

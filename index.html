@@ -121,8 +121,9 @@
         { bg: "street_night.jpg", speaker: "旁白", text: "妳沒回頭，消失在霓虹中。", action: "endGame" }
     ];
 
-    // --- 完整劇本：江逸 ---
+    // --- 完整劇本：江逸 (雙重心理戰終極版) ---
     const jiangScript = [
+        // 【第一幕：初次相遇】
         { bg: "JiangYi/Street-1.png", speaker: "女主角 (OS)", text: "好累……經歷了一個早上的課程，好想找個地方趴一下……<br>嗯？好濃郁的咖啡烘焙香氣……" },
         { bg: "JiangYi/Wind chimes.png", speaker: "", text: "（妳順著香味，推開了街角一間咖啡廳的門。）<br>— 清脆的風鈴聲響起 —" },
         { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "你好～歡迎光臨，請問今天想喝點什麼？" },
@@ -140,7 +141,61 @@
         { bg: "JiangYi/Love Seat.png", speaker: "女主角", text: "好啊，謝謝你！" },
         { bg: "JiangYi/Seat Window.png", speaker: "女主角 (OS)", text: "（坐在窗邊，感覺這份寧靜正一點一滴地治癒著疲憊……）" },
         { bg: "JiangYi/Tray.png", speaker: "女主角", text: "好香的味道～<br>（托盤上的咖啡旁，似乎壓著一張折起來的紙條）", action: "showPaperInteract" },
-        { bg: "JiangYi/Tray.png", speaker: "旁白", text: "看完紙條的那刻，心頭暖暖的，露出了滿足的微笑。", action: "endGame" }
+        { bg: "JiangYi/Tray.png", speaker: "旁白", text: "看完紙條的那刻，心頭暖暖的，露出了滿足的微笑。" },
+
+        // 【第二幕：期中考與雙重試探】
+        // 過場黑畫面
+        { bg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", speaker: "", text: "（幾天後，期中考週的地獄正式降臨……）" },
+        { bg: "JiangYi/Wind chimes.png", speaker: "女主角 (OS)", text: "（剛經歷了一場毀滅性的期中考，我現在只想找個安靜的地方躲起來。）" },
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角", text: "江逸……我想要一杯熱美式。" },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（看著我糟糕的臉色，他沉默了一下）<br>……今天沒有美式。這杯是熱可可。去坐著吧。" },
+        { bg: "JiangYi/Love Seat.png", speaker: "女主角 (OS)", text: "（他沒有多問，只是給了一杯不在菜單上的熱可可。緊繃的情緒放鬆下來，眼皮越來越重……）" },
+        
+        // 過場黑畫面 (睡著)
+        { bg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", speaker: "", text: "（不知不覺間，陷入了深沉的睡眠……）" },
+        { bg: "JiangYi/Arm.png", speaker: "女主角", text: "嗯……？<br>（迷迷糊糊睜開眼，發現身上嚴嚴實實地蓋著一條深色的毛毯。）" },
+        { bg: "JiangYi/Open Eyes to night.png", speaker: "女主角 (OS)", text: "（天啊，竟然已經這麼晚了嗎？而且……店裡的音樂被關掉了，安靜得只剩下製冰機的微弱低鳴。）" },
+        
+        // ⚡ 第一道考驗：行為界線 ⚡
+        { bg: "JiangYi/JiangYi Close eye.png", speaker: "女主角 (OS)", text: "（轉頭看向櫃檯，發現江逸竟然也睡著了。他看起來那麼脆弱，又那麼疏離。我該怎麼做？）", 
+          options: [
+              { text: "【心疼關心】把自己的圍巾輕輕圍到他脖子上", nextLine: 23 },
+              { text: "【尊重界線】走到吧檯外，敲木桌叫醒他", nextLine: 27 }
+          ] 
+        },
+
+        // 💔 第一道考驗：Bad End 路線 (Index 23-26)
+        { bg: "JiangYi/JiangYi Close eye.png", speaker: "女主角 (動作)", text: "（我不忍心他這樣睡。我輕輕伸手，試圖把圍巾圍到他脖子上。）<br>對不起讓你等這麼久……<slow>你這樣會著涼的……</slow>", nextLine: 24 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（像觸電一樣猛然睜開眼睛，眼神裡的脆弱瞬間化為極度的防備。他猛地揮開我的手）<br>「<fast>別碰我！</fast>」", nextLine: 25 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（站起身，眼神冰冷刺骨）<br>「這位客人，請認清妳自己的身份。不代表妳可以隨意觸碰我，更不代表妳可以自作主張地關心我。請妳馬上離開。」", nextLine: 26 },
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角 (OS)", text: "（空氣瞬間降到冰點。我知道，那扇半掩的門，被我不受控的『關心』徹底關上了。）<br><span style='color:#ff5555'>—— Bad End：無法跨越的理性界線 ——</span>", action: "endGame" },
+
+        // 💖 第一道考驗：Pass 路線 (Index 27-30)
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角 (動作)", text: "（我克制住觸碰他的衝動，走到吧檯外輕輕敲了敲木桌。）<br>江逸……江逸，醒醒。", nextLine: 28 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（迷濛地睜開眼睛，看到眼前的我，眼神閃過一絲驚訝，隨後很快恢復冷靜）<br>……嗯？妳醒啦？不好意思，我也……", nextLine: 29 },
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角", text: "抬頭看時鐘把我嚇一跳！不小心睡太熟了，真的非常對不起，耽誤你打烊的時間了！", nextLine: 30 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（防備的肩膀慢慢放鬆了些）<br>看妳睡得很沉，想說讓妳休息一下。反正我也剛好需要休息。", nextLine: 31 },
+
+        // ⚡ 第二道考驗：心理界線 ⚡
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角 (OS)", text: "（他明明做了這麼多貼心事：熱可可、毛毯、關音樂，卻又要裝出一副毫不在乎的模樣。我該怎麼回應這份笨拙的溫柔？）", 
+          options: [
+              { text: "【過度解讀】拆穿偽裝，表達深深的感動", nextLine: 32 },
+              { text: "【陳述事實】輕鬆道謝，不給予情感壓力", nextLine: 36 }
+          ] 
+        },
+
+        // 💔 第二道考驗：Bad End 路線 (Index 32-35)
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角", text: "江逸，其實你一直都在默默關心我對不對？關音樂、蓋毛毯……<slow>你明明有一顆很柔軟的心，為什麼總要裝得這麼冷漠？</slow>", nextLine: 33 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（臉上的血色瞬間褪去，眼神肉眼可見地冷卻下來）<br>……<slow>請妳不要過度解讀。</slow>", nextLine: 34 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "店裡冷氣強，我只是不想有客人生病，處理起來很麻煩。熱可可只是剛好有快過期的粉。別把妳的幻想投射在我身上。", nextLine: 35 },
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角 (OS)", text: "（我試圖扒開他的防衛，卻觸發了他最深層的恐懼。他用最傷人的話，徹底斬斷了我們之間的可能。）<br><span style='color:#ff5555'>—— Bad End：自以為是的看透 ——</span>", action: "endGame" },
+
+        // 💖 第二道考驗：True End 路線 (Index 36-40)
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角", text: "謝謝老闆的『靜音模式』和專屬毛毯！那杯熱可可超有效，睡一覺起來，我現在已經滿血復活了！", nextLine: 37 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（原本緊繃的身體，在聽到這句輕鬆的玩笑後，明顯地放鬆了下來）<br>……滿血復活就好。看來那杯熱可可的成本沒有白花。", nextLine: 38 },
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角", text: "絕對超值！為了報答老闆的恩情，我決定……明天來消費一杯最貴的咖啡！", nextLine: 39 },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（嘴角終於忍不住勾起一抹極度放鬆的輕笑）<br>最貴的？那我要考慮臨時漲價了。……明天見。妳點什麼，位子都幫妳留著。", nextLine: 40 },
+        { bg: "JiangYi/Start Counter.png", speaker: "女主角 (OS)", text: "（我不去觸碰他的傷口，只是接住了他的好。看著他放鬆的笑容，我知道，我拿到了通往他心裡的鑰匙。）<br><span style='color:#ffd700'>—— True End：不言而喻的默契 ——</span>", action: "endGame" }
     ];
 
     // --- 核心變數 ---

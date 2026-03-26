@@ -6,10 +6,10 @@
     <title>練愛 Practice of Love</title>
     <style>
         /* --- 基礎設定 --- */
-        body { margin: 0; padding: 0; background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: "Microsoft JhengHei", sans-serif; overflow: hidden; }
+        body { margin: 0; padding: 0; background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; font-family: "Microsoft JhengHei", sans-serif; overflow: hidden; }
         
-        /* 鎖定遊戲比例 1280x720 */
-        #game-container { position: relative; width: 1280px; height: 720px; background-color: #000; box-shadow: 0 0 20px rgba(0,0,0,0.8); overflow: hidden; }
+        /* 鎖定遊戲比例 1280x720，並設定縮放中心點 */
+        #game-container { position: relative; width: 1280px; height: 720px; background-color: #000; box-shadow: 0 0 20px rgba(0,0,0,0.8); overflow: hidden; transform-origin: center; }
         #bg-image { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease-in-out; }
 
         /* --- 1. 遊戲封面 --- */
@@ -36,12 +36,7 @@
         .option-btn { background-color: rgba(255, 255, 255, 0.95); color: #333; border: 2px solid #d4af37; padding: 15px 20px; font-size: 20px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: center; }
         .option-btn:hover { background-color: #d4af37; color: #fff; }
 
-        /* --- 互動與特效系統 --- */
-        /* 周渺：下雨特效 */
-        #rain-overlay { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 5; display: none; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720"><filter id="rain"><feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="1" seed="1" stitchTiles="stitch"/><feColorMatrix type="hueRotate" values="180"/><feColorMatrix type="matrix" values="0 0 0 0 0.2, 0 0 0 0 0.5, 0 0 0 0 0.7, 0 0 0 0 1, 0 0 0 -1 1"/><feDisplacementMap in="SourceGraphic" in2="rain" scale="10"/></filter><rect width="100%" height="100%" filter="url(%23rain)" opacity="0.3"/></svg>'); animation: rain-fall 0.2s linear infinite; }
-        
-        @keyframes rain-fall { 0% { background-position: 0px 0px; } 100% { background-position: 10px 400px; } }
-        
+        /* --- 互動系統 --- */
         /* 江逸：互動按鈕與紙條 */
         #interact-btn { position: absolute; background-color: rgba(255, 255, 255, 0.9); border: 2px dashed #a67c52; padding: 15px 40px; font-size: 24px; font-weight: bold; color: #5c3a21; cursor: pointer; border-radius: 10px; display: none; z-index: 70; animation: pulse 1.5s infinite; transform: translate(-50%, -50%); }
         #paper-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 80; }
@@ -53,7 +48,6 @@
 <body>
 
 <div id="game-container">
-    <div id="rain-overlay"></div>
 
     <div id="start-screen" onclick="goToMenu()">
         <img src="0.jpg" alt="遊戲封面" onerror="this.src='Start.png'">
@@ -82,17 +76,17 @@
 <script>
     // --- 劇本資料庫 1：周渺路線 ---
     const zhouScript = [
-        { bg: "rain_night.jpg", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", rain: true },
-        { bg: "rain_night.jpg", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。", rain: true },
-        { bg: "rain_night.jpg", speaker: "旁白", text: "突然，一聲語氣強烈的咒罵穿透了雨幕，落入耳中，隨即是幾記沉悶的碰撞聲。", rain: true },
-        { bg: "alley_night.jpg", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他那一頭張揚的金髮被雨打濕，貼在額前，校服白襯衫凌亂、沾著灰，唇角破裂滲著紅。", rain: true },
-        { bg: "alley_night.jpg", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
-        { bg: "alley_night.jpg", speaker: "周渺", text: "「......多管閒事。」他低著頭，聲音冷得像冰。", rain: true },
-        { bg: "alley_night.jpg", speaker: "旁白", text: "你不理會他不耐煩的語氣，蹲下與之平視。「嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」", rain: true },
-        { bg: "alley_night.jpg", speaker: "周渺", text: "「別碰我。」他縮了一下，眼神充滿防備。", rain: true },
-        { bg: "alley_night2.jpg", speaker: "旁白", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，堅定地握住他的手腕。", rain: true },
-        { bg: "alley_night.jpg", speaker: "周渺", text: "「奇怪的人......」他看著妳的身影喃喃自語。", rain: true },
-        { bg: "school_track.jpg", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色，光線像被刻意放慢，輕輕鋪在跑道與草地上。空氣瀰漫溫柔和靜謐。", rain: false },
+        { bg: "rain_night.jpg", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。" },
+        { bg: "rain_night.jpg", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。" },
+        { bg: "rain_night.jpg", speaker: "旁白", text: "突然，一聲語氣強烈的咒罵穿透了雨幕，落入耳中，隨即是幾記沉悶的碰撞聲。" },
+        { bg: "alley_night.jpg", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他那一頭張揚的金髮被雨打濕，貼在額前，校服白襯衫凌亂、沾著灰，唇角破裂滲著紅。" },
+        { bg: "alley_night.jpg", speaker: "Y/N", text: "「住手，我已經報警了！」" },
+        { bg: "alley_night.jpg", speaker: "周渺", text: "「......多管閒事。」他低著頭，聲音冷得像冰。" },
+        { bg: "alley_night.jpg", speaker: "旁白", text: "你不理會他不耐煩的語氣，蹲下與之平視。「嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」" },
+        { bg: "alley_night.jpg", speaker: "周渺", text: "「別碰我。」他縮了一下，眼神充滿防備。" },
+        { bg: "alley_night2.jpg", speaker: "旁白", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，堅定地握住他的手腕。" },
+        { bg: "alley_night.jpg", speaker: "周渺", text: "「奇怪的人......」他看著妳的身影喃喃自語。" },
+        { bg: "school_track.jpg", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色，光線像被刻意放慢，輕輕鋪在跑道與草地上。空氣瀰漫溫柔和靜謐。" },
         { bg: "school_track.jpg", speaker: "旁白", text: "放學後，你到高中找周渺. 他偶爾偷看你，耳尖在夕光中微微發紅。" },
         { bg: "school_track.jpg", speaker: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」" },
         { bg: "school_track.jpg", speaker: "周渺", text: "「怎麼又提起來、別逗我了......姐姐。」他侷促地低頭。" },
@@ -141,13 +135,13 @@
     ];
 
     // --- 遊戲核心變數 ---
-    let activeScript = []; // 目前正在跑的劇本 (周渺或江逸)
+    let activeScript = []; 
     let historyStack = []; 
     let currentIndex = 0;
     let isWaitingForInput = false;
-    let isTyping = false; // 是否正在打字
-    let currentTypingText = ""; // 當前台詞的完整文字
-    let currentTypingInterval; // 打字機的 interval id
+    let isTyping = false; 
+    let currentTypingText = ""; 
+    let currentTypingInterval; 
 
     // --- 畫面切換邏輯 ---
     function goToMenu() {
@@ -160,7 +154,6 @@
         document.getElementById("start-screen").style.display = "flex";
     }
 
-    // ★ 關鍵：根據選擇的腳色，載入對應的劇本
     function startStory(character) {
         if (character === 'zhou') {
             activeScript = zhouScript;
@@ -178,10 +171,8 @@
         if (index >= activeScript.length) return;
         const line = activeScript[index];
         
-        // 1. 切換背景
         document.getElementById("bg-image").src = line.bg;
         
-        // 2. 處理名字與對話
         const nameBox = document.getElementById("speaker-name");
         if (line.speaker) {
             nameBox.innerText = line.speaker;
@@ -190,20 +181,17 @@
             nameBox.style.display = "none";
         }
         
-        // 3. 重置 UI 狀態 (確保在往回操作時，舊的特效不會殘留)
         const dialogueBox = document.getElementById("dialogue-box");
         dialogueBox.style.display = line.hideDialogue ? "none" : "block";
         document.getElementById("back-btn").disabled = (historyStack.length === 0);
         document.getElementById("options-container").style.display = "none";
         document.getElementById("interact-btn").style.display = "none";
         document.getElementById("paper-modal").style.display = "none";
-        document.getElementById("rain-overlay").style.display = line.rain ? 'block' : 'none';
         
         dialogueBox.style.pointerEvents = "auto";
         isWaitingForInput = false;
 
-        // ★ 核心：逐字顯示與快速顯示邏輯
-        stopTypewriter(); // 確保停止之前的打字
+        stopTypewriter(); 
         if (line.text && !line.hideDialogue) {
             startTypewriter(line.text);
             dialogueBox.onclick = handleDialogueClick;
@@ -211,7 +199,6 @@
             dialogueBox.onclick = nextLine;
         }
 
-        // 4. 處理選項
         if (line.options) {
             isWaitingForInput = true;
             dialogueBox.style.pointerEvents = "none";
@@ -227,7 +214,6 @@
             optContainer.style.display = "flex";
         }
 
-        // 5. 處理特殊互動與結局
         if (line.action === "showMenuInteract") {
             isWaitingForInput = true;
             const interactBtn = document.getElementById("interact-btn");
@@ -252,16 +238,13 @@
             isWaitingForInput = true;
             dialogueBox.style.pointerEvents = "auto";
             dialogueBox.onclick = () => {
-                // 結局後直接返回標題畫面
                 document.getElementById("dialogue-box").style.display = "none";
                 document.getElementById("bg-image").src = "";
-                document.getElementById("rain-overlay").style.display = "none";
                 document.getElementById("start-screen").style.display = "flex";
             };
         }
     }
 
-    // --- 控制邏輯 ---
     function nextLine() {
         if (isWaitingForInput) return;
         historyStack.push(currentIndex);
@@ -281,10 +264,8 @@
         let previousState = historyStack.pop();
         
         if (previousState === "intro") {
-            // 返回選角畫面並清除所有殘留特效
             document.getElementById("dialogue-box").style.display = "none";
             document.getElementById("bg-image").src = "";
-            document.getElementById("rain-overlay").style.display = "none";
             document.getElementById("options-container").style.display = "none";
             document.getElementById("interact-btn").style.display = "none";
             document.getElementById("back-btn").disabled = true;
@@ -306,62 +287,101 @@
         renderLine(currentIndex);
     }
 
-    // ★ 打字機與對話框點擊邏輯
+    // ★ 重寫後的打字機與對話框點擊邏輯 (支援避開 HTML 標籤)
     function startTypewriter(text) {
         isTyping = true;
         currentTypingText = text;
         const dialogueBox = document.getElementById("dialogue-text");
-        dialogueBox.innerHTML = ""; // 清空文字
+        dialogueBox.innerHTML = ""; 
         
-        const chars = text.split("");
-        let charIndex = 0;
+        let i = 0;
+        let isTag = false;
+        let currentText = "";
         
+        clearInterval(currentTypingInterval);
         currentTypingInterval = setInterval(() => {
-            if (charIndex < chars.length) {
-                dialogueBox.innerHTML += chars[charIndex];
-                charIndex++;
+            if (i < text.length) {
+                currentText += text.charAt(i);
+                if (text.charAt(i) === '<') isTag = true;
+                if (text.charAt(i) === '>') isTag = false;
+                
+                dialogueBox.innerHTML = currentText;
+                i++;
+                
+                // 遇到 HTML 標籤直接略過等待時間，避免排版破損
+                while(isTag && i < text.length) {
+                    currentText += text.charAt(i);
+                    if (text.charAt(i) === '>') isTag = false;
+                    i++;
+                }
             } else {
                 stopTypewriter();
             }
-        }, 30); // 打字速度：30ms 一個字
+        }, 30);
     }
 
     function stopTypewriter() {
         if (!isTyping) return;
         clearInterval(currentTypingInterval);
-        document.getElementById("dialogue-text").innerHTML = currentTypingText; // 快速顯示完整文字
+        document.getElementById("dialogue-text").innerHTML = currentTypingText; 
         isTyping = false;
     }
 
     function handleDialogueClick(event) {
         if (isTyping) {
-            stopTypewriter();
+            stopTypewriter(); // 如果在打字，點擊會立刻全顯示
         } else {
-            nextLine();
+            nextLine();       // 如果已經顯示完畢，點擊會進入下一句
         }
     }
 
-    // ★ 選角畫面座標點擊邏輯
+    // ★ 精確選角畫面座標點擊邏輯
     function checkCharSelect(event) {
         const img = document.getElementById("char-select-img");
         const rect = img.getBoundingClientRect();
-        const containerWidth = 1280; // 鎖定的容器寬度
-        const containerHeight = 720; // 鎖定的容器高度
         
-        // 計算點擊相對於容器的 x, y 座標 (1280x720)
-        const mouseX = (event.clientX - rect.left) / img.clientWidth * containerWidth;
+        // 換算為 1280x720 基準的精確座標
+        const mouseX = (event.clientX - rect.left) / img.clientWidth * 1280;
+        const mouseY = (event.clientY - rect.top) / img.clientHeight * 720;
         
-        // 根據 x 座標判斷點擊區域
-        if (mouseX < containerWidth / 4) {
-            startStory('zhou'); // 左1：周渺
-        } else if (mouseX >= containerWidth / 4 && mouseX < (containerWidth / 4) * 2) {
-            alert('路線尚未開放'); // 左2
-        } else if (mouseX >= (containerWidth / 4) * 2 && mouseX < (containerWidth / 4) * 3) {
-            alert('路線尚未開放'); // 左3
+        // 設定角色的感應高度範圍 (假設圖中角色在 100 到 650 像素之間)
+        const charYTop = 100;
+        const charYBottom = 650;
+
+        // 必須點擊在高度範圍內
+        if (mouseY >= charYTop && mouseY <= charYBottom) {
+            // 以下區間是 1280 寬度中的各角色位置，你可以根據圖片實際位置微調數字
+            if (mouseX >= 50 && mouseX <= 280) { 
+                startStory('zhou'); // 左一：周渺
+            } 
+            else if (mouseX >= 350 && mouseX <= 580) { 
+                alert('路線尚未開放'); // 左二
+            } 
+            else if (mouseX >= 650 && mouseX <= 880) { 
+                alert('路線尚未開放'); // 左三
+            } 
+            else if (mouseX >= 950 && mouseX <= 1180) { 
+                startStory('jiang'); // 右一：江逸
+            }
+        }
+        // 如果沒有點到以上這些數字範圍內(例如背景、空白處)，就不做任何事
+    }
+
+    // --- 自動縮放系統 ---
+    function autoScale() {
+        const container = document.getElementById('game-container');
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const scale = Math.min(windowWidth / 1280, windowHeight / 720);
+        
+        if (scale < 1) {
+            container.style.transform = `scale(${scale})`;
         } else {
-            startStory('jiang'); // 右1：江逸
+            container.style.transform = `scale(1)`;
         }
     }
+    window.addEventListener('resize', autoScale);
+    window.addEventListener('DOMContentLoaded', autoScale);
 
     // --- 圖片預載入 ---
     function preloadImages() {

@@ -92,7 +92,7 @@
         { bg: "streetnight", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他一頭張揚的金髮被雨打濕，校服襯衫沾著灰，唇角滲著紅。", rain: true },
         { bg: "boy.jpg", speaker: "旁白", text: "他呼吸急促，肩膀隨著疼痛微顫，但眼神依舊冷得像能把人隔絕在外。就在其中一人抬手要再揍下去時——", rain: true },
         { bg: "streetnight", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
-        { bg: “bad", speaker: "旁白", text: "雨勢漸大。幾聲咒罵混雜在雨聲裡，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", rain: true },
+        { bg: "bad", speaker: "旁白", text: "雨勢漸大。幾聲咒罵混雜在雨聲裡，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", rain: true },
         { bg: "angry.jpg", speaker: "周渺", text: "「......多管閒事。」", rain: true },
         { 
             bg: "close.street", speaker: "抉擇", text: "看著倒在牆邊的他，你的回應是？", 
@@ -312,7 +312,22 @@
         }
     }
 
-    function nextLine() { historyStack.push(currentIndex); currentIndex++; renderLine(currentIndex); }
+    // --- 進入下一句 (修復分歧路線跳轉功能) ---
+    function nextLine() { 
+        historyStack.push(currentIndex); 
+        
+        const currentLine = activeScript[currentIndex];
+        // 檢查是否有指定跳轉到哪一句 (支援 nextLine 或 jumpTo)
+        if (currentLine.nextLine !== undefined) {
+            currentIndex = currentLine.nextLine;
+        } else if (currentLine.jumpTo !== undefined) {
+            currentIndex = currentLine.jumpTo;
+        } else {
+            currentIndex++; // 沒指定就正常 +1
+        }
+        
+        renderLine(currentIndex); 
+    }
     function prevLine() { // 往回一步功能
         let prev = historyStack.pop();
         if (prev === "intro") { backToStart(); goToMenu(); } 

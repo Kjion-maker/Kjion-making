@@ -364,10 +364,6 @@
         }
         
         renderLine(currentIndex); 
-    }
-    
-    
-
     function openPaper() { document.getElementById("paper-modal").style.display = "flex"; }
     function closePaper() { document.getElementById("paper-modal").style.display = "none"; nextLine(); }
 
@@ -399,63 +395,6 @@
             startStory('jiang'); // 右下：江逸
         }
         // 如果點擊在角色間的空隙或背景，則不做任何事
-    }
-
-    // --- 全螢幕縮放系統 ---
-    function autoScale() {
-        const container = document.getElementById('game-container');
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        // 計算縮放比例（取寬與高中較小的那個倍數，確保不超出畫面）
-        const scale = Math.min(windowWidth / 1280, windowHeight / 720);
-        
-        container.style.transform = `scale(${scale})`;
-    }
-    // --- ✨ 新增：小學堂純圖片輪播系統 ✨ ---
-    // 將你做好的四張圖依序放進來
-    const lessonImages = ["Lesson/Zhou.png", "Lesson/Lin.png", "Lesson/Mu.png", "Lesson/Jiang.png"];
-    let currentLessonImgIndex = 0;
-
-    function openLesson() {
-        document.getElementById("intro-menu-screen").style.display = "none";
-        document.getElementById("lesson-screen").style.display = "block";
-        currentLessonImgIndex = 0; // 從第一張開始
-        document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
-    }
-
-    function nextLessonImage() {
-        currentLessonImgIndex++;
-        if (currentLessonImgIndex < lessonImages.length) {
-            // 如果還有圖片，就換下一張
-            document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
-        } else {
-            // 圖片播完，關閉小學堂，回到選單
-            document.getElementById("lesson-screen").style.display = "none";
-            document.getElementById("intro-menu-screen").style.display = "block";
-        }
-    }
-
-    // --- ✨ 圖片預載入系統 (包含劇本與小學堂圖片，防止卡頓) ✨ ---
-    function preloadImages() {
-        const imagesToLoad = ["0.jpg", "Start.png", "selector_bg.jpg", "Intro Menu-2.jpg"];
-        
-        // 把小學堂的圖片加進去下載
-        lessonImages.forEach(url => imagesToLoad.push(url));
-
-        // 把周渺和江逸劇本裡的背景圖也加進去
-        const allScripts = [...zhouScript, ...jiangScript];
-        allScripts.forEach(line => {
-            if (line.bg && !line.bg.startsWith("data:image") && !imagesToLoad.includes(line.bg)) {
-                imagesToLoad.push(line.bg);
-            }
-        });
-
-        // 在背景默默下載
-        imagesToLoad.forEach(url => {
-            const img = new Image();
-            img.src = url;
-        });
-        console.log("所有圖片預載入完畢！");
     }
 
     // --- 全螢幕縮放系統 ---

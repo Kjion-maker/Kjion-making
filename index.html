@@ -30,8 +30,8 @@
         #btn-char4 { top: 52%; left: 52%; width: 33%; height: 36%; } /* 右下：江逸 */
 
         /* ✨ 新增：底部兩個橢圓形按鈕 (課程與設定) ✨ */
-        #btn-lesson { top: 93%; left: 26%; width: 37%; height: 7%; border-radius: 40px; } 
-        #btn-setting { top: 93%; left: 64.5%; width: 14%; height: 7%; border-radius: 40px; }
+        #btn-lesson { top: 91%; left: 26%; width: 37%; height: 7%; border-radius: 40px; } 
+        #btn-setting { top: 91%; left: 64.5%; width: 14%; height: 7%; border-radius: 40px; }
 
         /* 通用覆蓋樣式，用於遮蓋圖片像素 */
         .intro-ui-cover { position: absolute; background-color: #000; /* 使用黑色遮蓋 */ z-index: 155; pointer-events: none; /* 遮蓋層不阻擋點擊圖片 */ }
@@ -73,8 +73,12 @@
         <div id="btn-char3" class="char-select-btn" onclick="alert('此路線尚未開放')"></div>
         <div id="btn-char4" class="char-select-btn" onclick="startStory('jiang')"></div>
         
-        <div id="btn-lesson" class="char-select-btn" onclick="alert('進入依附理論小學堂！')"></div>
+        <div id="btn-lesson" class="char-select-btn" onclick="openLesson()"></div>
         <div id="btn-setting" class="char-select-btn" onclick="alert('目前功能尚未開放')"></div>
+    </div>
+    <div id="lesson-screen" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background-color:#000; z-index:180; cursor:pointer;" onclick="nextLessonImage()">
+        <img id="lesson-img" src="" style="width:100%; height:100%; object-fit:cover;">
+        <div style="position:absolute; right:30px; bottom:20px; color:rgba(255,255,255,0.7); font-size:18px; pointer-events:none; letter-spacing: 2px;">點擊畫面繼續 ▼</div>
     </div>
     <img id="bg-image" src="">
     <button id="back-btn" class="sys-btn" style="display:none;" onclick="prevLine()">← 往回一步</button> <div id="options-container"></div>
@@ -412,8 +416,62 @@
         
         container.style.transform = `scale(${scale})`;
     }
+    // --- ✨ 新增：小學堂純圖片輪播系統 ✨ ---
+    // 將你做好的四張圖依序放進來
+    const lessonImages = ["Zhou.jpg", "Lin.jpg", "Mu.jpg", "Jiang.jpg"];
+    let currentLessonImgIndex = 0;
+
+    function openLesson() {
+        document.getElementById("intro-menu-screen").style.display = "none";
+        document.getElementById("lesson-screen").style.display = "block";
+        currentLessonImgIndex = 0; // 從第一張開始
+        document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
+    }
+
+    function nextLessonImage() {
+        currentLessonImgIndex++;
+        if (currentLessonImgIndex < lessonImages.length) {
+            // 如果還有圖片，就換下一張
+            document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
+        } else {
+            // 圖片播完，關閉小學堂，回到選單
+            document.getElementById("lesson-screen").style.display = "none";
+            document.getElementById("intro-menu-screen").style.display = "block";
+        }
+    }
+
+    // --- ✨ 圖片預載入系統 (包含劇本與小學堂圖片，防止卡頓) ✨ ---
+    function preloadImages() {
+        const imagesToLoad = ["0.jpg", "Start.png", "selector_bg.jpg", "Intro Menu-2.jpg"];
+        
+        // 把小學堂的圖片加進去下載
+        lessonImages.forEach(url => imagesToLoad.push(url));
+
+        // 把周渺和江逸劇本裡的背景圖也加進去
+        const allScripts = [...zhouScript, ...jiangScript];
+        allScripts.forEach(line => {
+            if (line.bg && !line.bg.startsWith("data:image") && !imagesToLoad.includes(line.bg)) {
+                imagesToLoad.push(line.bg);
+            }
+        });
+
+        // 在背景默默下載
+        imagesToLoad.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+        console.log("所有圖片預載入完畢！");
+    }
+
+    // --- 全螢幕縮放系統 ---
+    function autoScale() {
+        const container = document.getElementById('game-container');
+        const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+        container.style.transform = `scale(${scale})`;
+    }
     window.addEventListener('resize', autoScale);
     window.addEventListener('DOMContentLoaded', autoScale);
+    window.addEventListener('load', preloadImages); // 網頁讀取完自動執行預載入
 </script>
 </body>
 </html>

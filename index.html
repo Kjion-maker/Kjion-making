@@ -81,7 +81,6 @@
         <div style="position:absolute; right:30px; bottom:20px; color:rgba(255,255,255,0.7); font-size:18px; pointer-events:none; letter-spacing: 2px;">點擊畫面繼續 ▼</div>
     </div>
     <img id="bg-image" src="">
-    <button id="back-btn" class="sys-btn" style="display:none;" onclick="prevLine()">← 往回一步</button> <div id="options-container"></div>
     <div id="interact-btn"></div>
     
     <div id="paper-modal" onclick="closePaper()">
@@ -287,7 +286,6 @@
         // 重置 UI
         document.getElementById("options-container").style.display = "none";
         document.getElementById("interact-btn").style.display = "none";
-        document.getElementById("back-btn").style.display = (historyStack.length <= 1) ? "none" : "block"; // 往回一步功能
         
         // 特殊行動
         if (line.options) {
@@ -367,10 +365,7 @@
         
         renderLine(currentIndex); 
     }
-    function prevLine() { // 往回一步功能
-        let prev = historyStack.pop();
-        if (prev === "intro") { backToStart(); goToMenu(); } 
-        else { currentIndex = prev; renderLine(currentIndex); }
+    
     }
 
     function openPaper() { document.getElementById("paper-modal").style.display = "flex"; }

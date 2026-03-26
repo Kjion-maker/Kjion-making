@@ -15,20 +15,10 @@
         /* --- 1. 遊戲封面 --- */
         #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 200; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         #start-screen img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-        .start-hint { position: absolute; bottom: 15%; font-size: 28px; color: #fff; background: rgba(212, 175, 55, 0.85); padding: 15px 50px; border-radius: 30px; border: 2px solid #fff; animation: pulse 1.5s infinite; letter-spacing: 2px; font-weight: bold; }
 
-        /* --- 2. 選角畫面 (Intro Menu) --- */
-        #intro-menu-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 150; display: none; }
-        #intro-menu-screen img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* 四個角色的精準點擊區塊 */
-        .char-select-btn { position: absolute; cursor: pointer; z-index: 160; transition: 0.3s; border-radius: 20px; }
-        .char-select-btn:hover { background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
-        
-        #btn-char1 { top: 11%; left: 12%; width: 36%; height: 35%; } 
-        #btn-char2 { top: 11%; left: 52%; width: 36%; height: 35%; } 
-        #btn-char3 { top: 51%; left: 12%; width: 36%; height: 35%; } 
-        #btn-char4 { top: 51%; left: 52%; width: 36%; height: 35%; }
+        /* --- 2. 選角畫面 --- */
+        #intro-menu-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 150; display: none; cursor: crosshair; }
+        #char-select-img { width: 100%; height: 100%; object-fit: cover; }
 
         /* UI 按鈕 */
         .sys-btn { position: absolute; top: 20px; right: 20px; background-color: rgba(212, 175, 55, 0.7); color: white; border: 1px solid #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; z-index: 170; font-size: 16px; transition: 0.3s; }
@@ -48,9 +38,9 @@
 
         /* --- 互動與特效系統 --- */
         /* 周渺：下雨特效 */
-        #rain-overlay { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 5; display: none; }
-        .rain { width: 100%; height: 100%; background-image: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%); background-size: 2px 400px; animation: rain-fall 0.6s linear infinite; }
-        @keyframes rain-fall { 0% { background-position: 0px -400px; } 100% { background-position: 20px 800px; } }
+        #rain-overlay { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 5; display: none; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720"><filter id="rain"><feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="1" seed="1" stitchTiles="stitch"/><feColorMatrix type="hueRotate" values="180"/><feColorMatrix type="matrix" values="0 0 0 0 0.2, 0 0 0 0 0.5, 0 0 0 0 0.7, 0 0 0 0 1, 0 0 0 -1 1"/><feDisplacementMap in="SourceGraphic" in2="rain" scale="10"/></filter><rect width="100%" height="100%" filter="url(%23rain)" opacity="0.3"/></svg>'); animation: rain-fall 0.2s linear infinite; }
+        
+        @keyframes rain-fall { 0% { background-position: 0px 0px; } 100% { background-position: 10px 400px; } }
         
         /* 江逸：互動按鈕與紙條 */
         #interact-btn { position: absolute; background-color: rgba(255, 255, 255, 0.9); border: 2px dashed #a67c52; padding: 15px 40px; font-size: 24px; font-weight: bold; color: #5c3a21; cursor: pointer; border-radius: 10px; display: none; z-index: 70; animation: pulse 1.5s infinite; transform: translate(-50%, -50%); }
@@ -63,18 +53,15 @@
 <body>
 
 <div id="game-container">
-    <div id="rain-overlay"><div class="rain"></div></div>
+    <div id="rain-overlay"></div>
 
     <div id="start-screen" onclick="goToMenu()">
         <img src="0.jpg" alt="遊戲封面" onerror="this.src='Start.png'">
-        <div class="start-hint">點擊開始遊戲</div>
     </div>
 
     <div id="intro-menu-screen">
-        <img src="selector_bg.jpg" alt="選角畫面" onerror="this.src='IntroMenu.png'">
-        <div id="btn-char1" class="char-select-btn" onclick="startStory('zhou')"></div> <div id="btn-char2" class="char-select-btn" onclick="alert('路線尚未開放')"></div>
-        <div id="btn-char3" class="char-select-btn" onclick="alert('路線尚未開放')"></div>
-        <div id="btn-char4" class="char-select-btn" onclick="startStory('jiang')"></div> <button id="intro-back-btn" class="sys-btn" onclick="backToStart()">← 返回標題</button>
+        <img id="char-select-img" src="selector_bg.jpg" alt="選角畫面" onerror="this.src='IntroMenu.png'" onclick="checkCharSelect(event)">
+        <button id="intro-back-btn" class="sys-btn" onclick="backToStart()">← 返回標題</button>
     </div>
 
     <img id="bg-image" src="" alt="背景">
@@ -86,7 +73,7 @@
         <div id="paper-content">『可以坐久一點沒關係。』<br><span style="font-size:14px; color:#888; position:absolute; bottom:15px; right:20px;">▼ 點擊關閉</span></div>
     </div>
     
-    <div id="dialogue-box" onclick="nextLine()">
+    <div id="dialogue-box">
         <div id="speaker-name"></div>
         <div id="dialogue-text"></div>
     </div>
@@ -95,58 +82,40 @@
 <script>
     // --- 劇本資料庫 1：周渺路線 ---
     const zhouScript = [
-        { bg: "streetnight", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "倏忽，一聲語氣強烈的咒罵穿透了雨幕，隨即是幾記沉悶的碰撞聲，像拳頭砸在肉上，伴隨微弱幾不可察的悶哼。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他一頭張揚的金髮被雨打濕，校服襯衫沾著灰，唇角滲著紅。", rain: true },
-        { bg: "boy.jpg", speaker: "旁白", text: "他呼吸急促，肩膀隨著疼痛微顫，但眼神依舊冷得像能把人隔絕在外。就在其中一人抬手要再揍下去時——", rain: true },
-        { bg: "streetnight", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
-        { bg: “bad", speaker: "旁白", text: "雨勢漸大。幾聲咒罵混雜在雨聲裡，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", rain: true },
-        { bg: "angry.jpg", speaker: "周渺", text: "「......多管閒事。」", rain: true },
+        { bg: "rain_night.jpg", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", rain: true },
+        { bg: "rain_night.jpg", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。", rain: true },
+        { bg: "rain_night.jpg", speaker: "旁白", text: "突然，一聲語氣強烈的咒罵穿透了雨幕，落入耳中，隨即是幾記沉悶的碰撞聲。", rain: true },
+        { bg: "alley_night.jpg", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他那一頭張揚的金髮被雨打濕，貼在額前，校服白襯衫凌亂、沾著灰，唇角破裂滲著紅。", rain: true },
+        { bg: "alley_night.jpg", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
+        { bg: "alley_night.jpg", speaker: "周渺", text: "「......多管閒事。」他低著頭，聲音冷得像冰。", rain: true },
+        { bg: "alley_night.jpg", speaker: "旁白", text: "你不理會他不耐煩的語氣，蹲下與之平視。「嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」", rain: true },
+        { bg: "alley_night.jpg", speaker: "周渺", text: "「別碰我。」他縮了一下，眼神充滿防備。", rain: true },
+        { bg: "alley_night2.jpg", speaker: "旁白", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，堅定地握住他的手腕。", rain: true },
+        { bg: "alley_night.jpg", speaker: "周渺", text: "「奇怪的人......」他看著妳的身影喃喃自語。", rain: true },
+        { bg: "school_track.jpg", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色，光線像被刻意放慢，輕輕鋪在跑道與草地上。空氣瀰漫溫柔和靜謐。", rain: false },
+        { bg: "school_track.jpg", speaker: "旁白", text: "放學後，你到高中找周渺. 他偶爾偷看你，耳尖在夕光中微微發紅。" },
+        { bg: "school_track.jpg", speaker: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」" },
+        { bg: "school_track.jpg", speaker: "周渺", text: "「怎麼又提起來、別逗我了......姐姐。」他侷促地低頭。" },
+        { bg: "school_track.jpg", speaker: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」" },
+        { bg: "school_track.jpg", speaker: "周渺", text: "「姐、姐姐......」他聲音細如蚊蚋。" },
+        { bg: "street_night.jpg", speaker: "旁白", text: "夜幕降臨，街道兩旁的霓虹燈開始閃爍。氣氛突然變得凝重，妳停下腳步，轉頭看向他。" },
+        { bg: "street_night.jpg", speaker: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」" },
+        { bg: "street_night.jpg", speaker: "周渺", text: "「姐姐......你不要我了嗎？」他慌張地抓住你的衣角，眼神清澈卻盛滿絕望。" },
+        { bg: "street_night.jpg", speaker: "周渺", text: "「妳總是這樣...輕易地決定我的未來。那妳有沒有想過，我的未來裡如果沒有妳，還算什麼未來？」" },
+        { bg: "street_night.jpg", speaker: "周渺", text: "「我努力考上理想的學校，努力變得成熟，都是為了能站在妳身邊啊！」" },
+        { bg: "street_night.jpg", speaker: "周渺", text: "「Y/N，別再把我當小孩了。這不是一小段路，這是我的人生。」" },
+        { bg: "street_night.jpg", speaker: "周渺", text: "「姐姐，別再推開我了，好嗎？」他緊緊凝視著妳。" },
         { 
-            bg: "close.street", speaker: "抉擇", text: "看著倒在牆邊的他，你的回應是？", 
+            bg: "street_night.jpg", speaker: "抉擇", text: "地面映照著城市的燈火，看著他眼底的淚光，妳的回答是？", 
             options: [
-                { text: "就當我是在做善事", nextLine: 9 },
-                { text: "⋯⋯", nextLine: 10 }
-            ],
-            rain: true
-        },
-        // 分支 1 (Index 9)
-        { bg: "close.street", speaker: "Y/N", text: "「就當作我是在做善事、行善積德囉。」你不理會他的排斥，蹲下與之平視，檢查他的傷勢。", rain: true, jumpTo: 11 },
-        // 分支 2 (Index 10)
-        { bg: "close.street", speaker: "Y/N", text: "「⋯⋯嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」你蹲下與之平視。", rain: true },
-        
-        { bg: "angryboy.jpg", speaker: "周渺", text: "「別碰我。」他語氣強硬，動作也抗拒著，眼神仍帶著防備。", rain: true },
-        { bg: "hand.jpg", speaker: "Y/N", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，但堅定地握住他的手腕。", rain: true },
-        { bg: "umback", speaker: "Y/N", text: "「以後小心點，記得去醫院看看。」你簡單包紮後，留下了一把備用傘，轉身離去。", rain: true },
-        { bg: "plainface", speaker: "周渺", text: "「奇怪的人......」他看著你的背影喃喃自語。", rain: true },
-        
-        // 場景切換：操場 (Index 15)
-        { bg: "run.jpg", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色。放學後，你到周渺就讀的高中找他。空氣瀰漫著溫柔和靜謐。", rain: false },
-        { bg: "run.jpg", speaker: "旁白", text: "你們並肩走在安靜的操場。他偶爾偷看你，又迅速移開視線，耳尖在夕光中微微發紅。" },
-        { bg: "cat", speaker: "旁白", text: "突然，一聲貓叫聲劃破了寧靜——（喵～）", sound: "cat.mp3" },
-        { bg: "cat", speaker: "Y/N", text: "「哇，好可愛的貓咪......」你伸出手，雖然被牠的叫聲嚇了一跳，但仍柔聲安撫牠。" },
-        { bg: "mimi", speaker: "旁白", text: "小貓感受到你的善意，乖順地蹭了蹭你的掌心。你指腹順著牠柔軟的背毛慢慢滑過。" },
-        { bg: "run.jpg", speaker: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」你彎起嘴角輕笑。" },
-        { bg: "shyboy.jpg", speaker: "周渺", text: "「怎麼又提起來、別逗我了......」" },
-        { bg: "shyboy.jpg", speaker: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」" },
-        { bg: "shyboy.jpg", speaker: "周渺", text: "「姐、姐姐......」他害羞地低下了頭。" },
-        
-        // 劇情三：分離 (Index 24)
-        { bg: "car.jpg", speaker: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」" },
-        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐......你不要我了嗎？」" },
-        { bg: "car.jpg", speaker: "Y/N", text: "「你還小，未來會遇到更多不同的人......分開對我們來說都好。」你語氣冷硬。" },
-        { bg: "carboy.jpg", speaker: "周渺", text: "「Y/N，別再把我當小孩了！」他打斷你，眼神中滿是掙扎。" },
-        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐、姐姐，不要丟下我⋯⋯」他慌張又無措地想伸手抓住你，試圖挽留。" },
-        { 
-            bg: "car.jpg", speaker: "抉擇", text: "看著他眼眶中的淚水，你是否願意接受他的挽留？", 
-            options: [
-                { text: "接受挽留，回抱他", nextLine: 30 },
-                { text: "轉身離去，不再回頭", nextLine: 32 }
+                { text: "回抱住他", nextLine: 24 },
+                { text: "狠心離開", nextLine: 26 }
             ]
         },
-        { bg: "car.jpg", speaker: "旁白", text: "你終究還是心軟了，伸手回抱住這個顫抖的少年。他的世界在那一刻重新亮了起來。", action: "endGame" },
-        { bg: "car.jpg", speaker: "旁白", text: "你推開了他的手，頭也不回地走入雨幕。這段關係終究劃下了句點。", action: "endGame" }
+        { bg: "street_night.jpg", speaker: "旁白", text: "他激動地緊緊擁抱妳。" },
+        { bg: "street_night.jpg", speaker: "周渺", text: "「只要妳不走...要我做什麼都可以。」", action: "endGame" },
+        { bg: "street_night.jpg", speaker: "旁白", text: "妳沒回頭，消失在霓虹中。" },
+        { bg: "street_night.jpg", speaker: "旁白", text: "夜風吹過，故事在此刻翻開了新的一頁。", action: "endGame" }
     ];
 
     // --- 劇本資料庫 2：江逸路線 ---
@@ -162,7 +131,7 @@
           ] 
         },
         { bg: "JiangYi/Making Coffee.png", speaker: "江逸", text: "看妳好像有點累。如果怕太苦的話，可以考慮「熱的燕麥奶拿鐵」。<br>燕麥奶的甜味會中和咖啡的苦，適合想稍微打起精神的時候。", nextLine: 7 },
-        { bg: "JiangYi/Making Coffee.png", speaker: "江逸", text: "好的，一杯熱美式。<br>不過看妳好像有點累，如果不急，要不要幫妳換成溫和一點的「熱的燕麥奶拿鐵」？", nextLine: 7 },
+        { bg: "JiangYi/Making Coffee.png", speaker: "江逸", text: "好的，一杯熱美式。<br>不過看妳好像有點累，如果不急，要不要幫妳换成溫和一點的「熱的燕麥奶拿鐵」？", nextLine: 7 },
         { bg: "JiangYi/Start Counter.png", speaker: "女主角", text: "好～那一杯熱的燕麥奶拿鐵就可以了～謝謝你！" },
         { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "有想坐在哪裡嗎？如果不介意的話，可以考慮靠窗的那個座位。" },
         { bg: "JiangYi/Love Seat.png", speaker: "女主角", text: "好啊，謝謝你！" },
@@ -176,6 +145,9 @@
     let historyStack = []; 
     let currentIndex = 0;
     let isWaitingForInput = false;
+    let isTyping = false; // 是否正在打字
+    let currentTypingText = ""; // 當前台詞的完整文字
+    let currentTypingInterval; // 打字機的 interval id
 
     // --- 畫面切換邏輯 ---
     function goToMenu() {
@@ -202,7 +174,7 @@
     }
 
     // --- 渲染台詞與畫面核心 ---
-    function renderLine(index, isBacking = false) {
+    function renderLine(index) {
         if (index >= activeScript.length) return;
         const line = activeScript[index];
         
@@ -217,7 +189,6 @@
         } else {
             nameBox.style.display = "none";
         }
-        document.getElementById("dialogue-text").innerHTML = line.text;
         
         // 3. 重置 UI 狀態 (確保在往回操作時，舊的特效不會殘留)
         const dialogueBox = document.getElementById("dialogue-box");
@@ -230,7 +201,15 @@
         
         dialogueBox.style.pointerEvents = "auto";
         isWaitingForInput = false;
-        dialogueBox.onclick = nextLine;
+
+        // ★ 核心：逐字顯示與快速顯示邏輯
+        stopTypewriter(); // 確保停止之前的打字
+        if (line.text && !line.hideDialogue) {
+            startTypewriter(line.text);
+            dialogueBox.onclick = handleDialogueClick;
+        } else {
+            dialogueBox.onclick = nextLine;
+        }
 
         // 4. 處理選項
         if (line.options) {
@@ -312,7 +291,7 @@
             document.getElementById("intro-menu-screen").style.display = "block";
         } else {
             currentIndex = previousState;
-            renderLine(currentIndex, true);
+            renderLine(currentIndex);
         }
     }
 
@@ -325,6 +304,63 @@
         historyStack.push(currentIndex);
         currentIndex++;
         renderLine(currentIndex);
+    }
+
+    // ★ 打字機與對話框點擊邏輯
+    function startTypewriter(text) {
+        isTyping = true;
+        currentTypingText = text;
+        const dialogueBox = document.getElementById("dialogue-text");
+        dialogueBox.innerHTML = ""; // 清空文字
+        
+        const chars = text.split("");
+        let charIndex = 0;
+        
+        currentTypingInterval = setInterval(() => {
+            if (charIndex < chars.length) {
+                dialogueBox.innerHTML += chars[charIndex];
+                charIndex++;
+            } else {
+                stopTypewriter();
+            }
+        }, 30); // 打字速度：30ms 一個字
+    }
+
+    function stopTypewriter() {
+        if (!isTyping) return;
+        clearInterval(currentTypingInterval);
+        document.getElementById("dialogue-text").innerHTML = currentTypingText; // 快速顯示完整文字
+        isTyping = false;
+    }
+
+    function handleDialogueClick(event) {
+        if (isTyping) {
+            stopTypewriter();
+        } else {
+            nextLine();
+        }
+    }
+
+    // ★ 選角畫面座標點擊邏輯
+    function checkCharSelect(event) {
+        const img = document.getElementById("char-select-img");
+        const rect = img.getBoundingClientRect();
+        const containerWidth = 1280; // 鎖定的容器寬度
+        const containerHeight = 720; // 鎖定的容器高度
+        
+        // 計算點擊相對於容器的 x, y 座標 (1280x720)
+        const mouseX = (event.clientX - rect.left) / img.clientWidth * containerWidth;
+        
+        // 根據 x 座標判斷點擊區域
+        if (mouseX < containerWidth / 4) {
+            startStory('zhou'); // 左1：周渺
+        } else if (mouseX >= containerWidth / 4 && mouseX < (containerWidth / 4) * 2) {
+            alert('路線尚未開放'); // 左2
+        } else if (mouseX >= (containerWidth / 4) * 2 && mouseX < (containerWidth / 4) * 3) {
+            alert('路線尚未開放'); // 左3
+        } else {
+            startStory('jiang'); // 右1：江逸
+        }
     }
 
     // --- 圖片預載入 ---

@@ -84,62 +84,89 @@
 </div>
 
 <script>
-    // --- 劇本資料庫 1：周渺路線 ---
-    const zhouScript = [
-        { bg: "streetnight", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "倏忽，一聲語氣強烈的咒罵穿透了雨幕，隨即是幾記沉悶的碰撞聲，像拳頭砸在肉上，伴隨微弱幾不可察的悶哼。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他一頭張揚的金髮被雨打濕，校服襯衫沾著灰，唇角滲著紅。", rain: true },
-        { bg: "boy.jpg", speaker: "旁白", text: "他呼吸急促，肩膀隨著疼痛微顫，但眼神依舊冷得像能把人隔絕在外。就在其中一人抬手要再揍下去時——", rain: true },
-        { bg: "streetnight", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
-        { bg: "bad", speaker: "旁白", text: "雨勢漸大。幾聲咒罵混雜在雨聲裡，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", rain: true },
-        { bg: "angry.jpg", speaker: "周渺", text: "「......多管閒事。」", rain: true },
-        { 
-            bg: "close.street", speaker: "抉擇", text: "看著倒在牆邊的他，你的回應是？", 
-            options: [
-                { text: "就當我是在做善事", nextLine: 9 },
-                { text: "⋯⋯", nextLine: 10 }
-            ],
-            rain: true
-        },
-        // 分支 1 (Index 9)
-        { bg: "close.street", speaker: "Y/N", text: "「就當作我是在做善事、行善積德囉。」你不理會他的排斥，蹲下與之平視，檢查他的傷勢。", rain: true, jumpTo: 11 },
-        // 分支 2 (Index 10)
-        { bg: "close.street", speaker: "Y/N", text: "「⋯⋯嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」你蹲下與之平視，檢查他的傷勢。", rain: true },
-        
-        { bg: "angryboy.jpg", speaker: "周渺", text: "「別碰我。」他語氣強硬，動作也抗拒著，眼神仍帶著防備。", rain: true },
-        { bg: "hand.jpg", speaker: "Y/N", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，但堅定地握住他的手腕。", rain: true },
-        { bg: "umback", speaker: "Y/N", text: "「以後小心點，記得去醫院看看。」你簡單包紮後，留下了一把備用傘，轉身離去。", rain: true },
-        { bg: "plainface", speaker: "周渺", text: "「奇怪的人......」他看著你的背影喃喃自語。", rain: true },
-        
-        // 場景切換：操場 (Index 15)
-        { bg: "run.jpg", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色。放學後，你到周渺就讀的高中找他。空氣瀰漫著溫柔和靜謐。", rain: false },
-        { bg: "run.jpg", speaker: "旁白", text: "你們並肩走在安靜的操場。他偶爾偷看你，又迅速移開視線，耳尖在夕光中微微發紅。" },
-        { bg: "cat", speaker: "旁白", text: "突然，一聲貓叫聲劃破了寧靜——", sound: "Soundcat.mp4" },
-        { bg: "cat", speaker: "Y/N", text: "「哇，好可愛的貓咪......」你伸出手，雖然被牠的叫聲嚇了一跳，但仍柔聲安撫牠。" },
-        { bg: "mimi", speaker: "旁白", text: "小貓感受到你的善意，乖順地蹭了蹭你的掌心。你指腹順著牠柔軟的背毛慢慢滑過。" },
-        { bg: "run.jpg", speaker: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」你彎起嘴角輕笑。" },
-        { bg: "shyboy.jpg", speaker: "周渺", text: "「怎麼又提起來、別逗我了......」" },
-        { bg: "run.jpg", speaker: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」" },
-        { bg: "shyboy.jpg", speaker: "周渺", text: "「姐、姐姐......」他害羞地低下了頭。" },
-        
-        // 劇情三：分離 (Index 24)
-        { bg: "car.jpg", speaker: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」" },
-        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐......你不要我了嗎？」" },
-        { bg: "car.jpg", speaker: "Y/N", text: "「你還小，未來會遇到更多不同的人......分開對我們來說都好。」你語氣冷硬。" },
-        { bg: "carboy.jpg", speaker: "周渺", text: "「Y/N，別再把我當小孩了！」他打斷你，眼神中滿是掙扎。" },
-        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐、姐姐，不要丟下我⋯⋯」他慌張又無措地想伸手抓住你，試圖挽留。" },
-        { 
-            bg: "car.jpg", speaker: "抉擇", text: "看著他眼眶中的淚水，你是否願意接受他的挽留？", 
-            options: [
-                { text: "接受挽留，回抱他", nextLine: 30 },
-                { text: "轉身離去，不再回頭", nextLine: 31 }
-            ]
-        },
-        { bg: "car.jpg", speaker: "旁白", text: "你終究還是心軟了，伸手回抱住這個顫抖的少年。他的世界在那一刻重新亮了起來。", action: "endGame" },
-        { bg: "car.jpg", speaker: "旁白", text: "你推開了他的手，頭也不回地走入雨幕。這段關係終究劃下了句點。", action: "endGame" }
-    ];
+    // --- 1. 背景音樂控制與檔案命名 ---
+    // 請將你的音樂檔案分別命名為以下名稱：
+    const bgmFiles = {
+        rainy: "rainy_bgm.mp3",   // 雨夜場景音樂
+        school: "school_bgm.mp3", // 操場場景音樂
+        sad: "sad_bgm.mp3"        // 分離場景音樂
+    };
 
+    let currentBgmAudio = new Audio();
+    currentBgmAudio.loop = true;
+
+    // 播放音樂的邏輯
+    function playBGM(type) {
+        const file = bgmFiles[type];
+        if (file && (!currentBgmAudio.src || !currentBgmAudio.src.includes(file))) {
+            currentBgmAudio.src = file;
+            currentBgmAudio.play().catch(e => console.log("需使用者互動後播放"));
+        }
+    }
+
+    // 請在你的渲染/切換對話函式最後執行這個檢查
+    function checkBGM(index) {
+        if (zhouScript[index] && zhouScript[index].bgm) {
+            playBGM(zhouScript[index].bgm);
+        }
+    }
+
+    // --- 2. 完整劇本資料庫 (含音效與音樂標記) ---
+    const zhouScript = [
+        { bg: "streetnight", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", rain: true, bgm: "rainy" },
+        { bg: "streetnight", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。", rain: true },
+        { bg: "streetnight", speaker: "旁白", text: "倏忽，一聲語氣強烈的咒罵穿透了雨幕，隨即是幾記沉悶的碰撞聲，像拳頭砸在肉上，伴隨微弱幾不可察的悶哼。", rain: true },
+        { bg: "streetnight", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他一頭張揚的金髮被雨打濕，校服襯衫沾著灰，唇角滲著紅。", rain: true },
+        { bg: "boy.jpg", speaker: "旁白", text: "他呼吸急促，肩膀隨著疼痛微顫，但眼神依舊冷得像能把人隔絕在外。就在其中一人抬手要再揍下去時——", rain: true },
+        { bg: "streetnight", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
+        { bg: "bad", speaker: "旁白", text: "雨勢漸大。幾聲咒罵混雜在雨聲裡，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", rain: true },
+        { bg: "angry.jpg", speaker: "周渺", text: "「......多管閒事。」", rain: true },
+        { 
+            bg: "close.street", speaker: "抉擇", text: "看著倒在牆邊的他，你的回應是？", 
+            options: [
+                { text: "就當我是在做善事", nextLine: 9 },
+                { text: "⋯⋯", nextLine: 10 }
+            ],
+            rain: true
+        },
+        // 分支 1 (Index 9)
+        { bg: "close.street", speaker: "Y/N", text: "「就當作我是在做善事、行善積德囉。」你不理會他的排斥，蹲下與之平視，檢查他的傷勢。", rain: true, jumpTo: 11 },
+        // 分支 2 (Index 10)
+        { bg: "close.street", speaker: "Y/N", text: "「⋯⋯嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」你蹲下與之平視，檢查他的傷勢。", rain: true },
+        
+        { bg: "angryboy.jpg", speaker: "周渺", text: "「別碰我。」他語氣強硬，動作也抗拒著，眼神仍帶著防備。", rain: true },
+        { bg: "hand.jpg", speaker: "Y/N", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，但堅定地握住他的手腕。", rain: true },
+        { bg: "umback", speaker: "Y/N", text: "「以後小心點，記得去醫院看看。」你簡單包紮後，留下了一把備用傘，轉身離去。", rain: true },
+        { bg: "plainface", speaker: "周渺", text: "「奇怪的人......」他看著你的背影喃喃自語。", rain: true },
+        
+        // 場景切換：操場 (Index 15)
+        { bg: "run.jpg", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色。放學後，你到周渺就讀的高中找他。空氣瀰漫著溫柔和靜謐。", rain: false, bgm: "school" },
+        { bg: "run.jpg", speaker: "旁白", text: "你們並肩走在安靜的操場。他偶爾偷看你，又迅速移開視線，耳尖在夕光中微微發紅。" },
+        { bg: "cat", speaker: "旁白", text: "突然，一聲貓叫聲劃破了寧靜——", sound: "Soundcat.mp4" },
+        { bg: "cat", speaker: "Y/N", text: "「哇，好可愛的貓咪......」你伸出手，雖然被牠的叫聲嚇了一跳，但仍柔聲安撫牠。" },
+        { bg: "mimi", speaker: "旁白", text: "小貓感受到你的善意，乖順地蹭了蹭你的掌心。你指腹順著牠柔軟的背毛慢慢滑過。" },
+        { bg: "run.jpg", speaker: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」你彎起嘴角輕笑。" },
+        { bg: "shyboy.jpg", speaker: "周渺", text: "「怎麼又提起來、別逗我了......」" },
+        { bg: "run.jpg", speaker: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」" },
+        { bg: "shyboy.jpg", speaker: "周渺", text: "「姐、姐姐......」他害羞地低下了頭。" },
+        
+        // 劇情三：分離 (Index 24)
+        { bg: "car.jpg", speaker: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」", bgm: "sad" },
+        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐......你不要我了嗎？」" },
+        { bg: "car.jpg", speaker: "Y/N", text: "「你還小，未來會遇到更多不同的人......分開對我們來說都好。」你語氣冷硬。" },
+        { bg: "carboy.jpg", speaker: "周渺", text: "「Y/N，別再把我當小孩了！」他打斷你，眼神中滿是掙扎。" },
+        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐、姐姐，不要丟下我⋯⋯」他慌張又無措地想伸手抓住你，試圖挽留。" },
+        { 
+            bg: "car.jpg", speaker: "抉擇", text: "看著他眼眶中的淚水，你是否願意接受他的挽留？", 
+            options: [
+                { text: "接受挽留，回抱他", nextLine: 30 },
+                { text: "轉身離去，不再回頭", nextLine: 31 }
+            ]
+        },
+        { bg: "car.jpg", speaker: "旁白", text: "你終究還是心軟了，伸手回抱住這個顫抖的少年。他的世界在那一刻重新亮了起來。", action: "endGame" },
+        { bg: "car.jpg", speaker: "旁白", text: "你推開了他的手，頭也不回地走入雨幕。這段關係終究劃下了句點。", action: "endGame" }
+    ];
+    
     // --- 完整劇本：江逸 (雙重心理戰終極版) ---
     const jiangScript = [
         // 【第一幕：初次相遇】

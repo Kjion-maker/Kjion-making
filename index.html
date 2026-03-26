@@ -52,10 +52,13 @@
     </div>
 
     <div id="intro-menu-screen">
-        <img id="char-select-img" src="selector_bg.jpg" alt="選角" onerror="this.src='IntroMenu.png'" onclick="checkCharSelect(event)">
+        <img id="char-select-img" src="selector_bg.jpg" alt="選角" onerror="this.src='IntroMenu.png'">
         
-        <div id="cover-top-bubble" class="intro-ui-cover" style="left: 450px; top: 0; width: 380px; height: 100px;"></div> <div id="cover-bottom-btns" class="intro-ui-cover" style="left: 200px; top: 620px; width: 880px; height: 100px;"></div> <div id="cover-top-back" class="intro-ui-cover" style="left: 1100px; top: 0; width: 180px; height: 100px;"></div> </div>
-
+        <div id="btn-char1" class="char-select-btn" onclick="startStory('zhou')"></div>
+        <div id="btn-char2" class="char-select-btn" onclick="alert('此路線尚未開放')"></div>
+        <div id="btn-char3" class="char-select-btn" onclick="alert('此路線尚未開放')"></div>
+        <div id="btn-char4" class="char-select-btn" onclick="startStory('jiang')"></div>
+    </div>
     <img id="bg-image" src="">
     <button id="back-btn" class="sys-btn" style="display:none;" onclick="prevLine()">← 往回一步</button> <div id="options-container"></div>
     <div id="interact-btn"></div>

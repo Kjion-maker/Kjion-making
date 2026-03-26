@@ -1,453 +1,478 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>練愛 Practice of Love</title>
-    <style>
-        /* --- 基礎設定與自動縮放基準 --- */
-        body { margin: 0; padding: 0; background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; font-family: "Microsoft JhengHei", sans-serif; overflow: hidden; }
-        
-        #game-container { position: relative; width: 1280px; height: 720px; background-color: #000; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden; transform-origin: center; flex-shrink: 0; }
-        #bg-image { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>練愛 Practice of Love</title>
+    <style>
+        /* --- 基礎設定與自動縮放基準 --- */
+        body { margin: 0; padding: 0; background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; font-family: "Microsoft JhengHei", sans-serif; overflow: hidden; }
+        
+        #game-container { position: relative; width: 1280px; height: 720px; background-color: #000; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden; transform-origin: center; flex-shrink: 0; }
+        #bg-image { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease; }
 
-        /* --- 1. 遊戲封面 --- */
-        #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 200; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        #start-screen img { width: 100%; height: 100%; object-fit: cover; }
+        /* --- 1. 遊戲封面 --- */
+        #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 200; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        #start-screen img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 2. 選角畫面：透明按鈕與發光特效 --- */
-        #intro-menu-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 150; display: none; }
-        #char-select-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .char-select-btn { position: absolute; cursor: pointer; z-index: 160; transition: 0.3s; border-radius: 15px; }
-        /* 滑鼠移上去時的微微發光感 */
-        .char-select-btn:hover { background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
-        
-        /* 精準對齊四張圖的位子 (百分比定位，縮放絕對不跑位) */
-        #btn-char1 { top: 12%; left: 15%; width: 33%; height: 36%; } /* 左上：周渺 */
-        #btn-char2 { top: 12%; left: 52%; width: 33%; height: 36%; } /* 右上 */
-        #btn-char3 { top: 52%; left: 15%; width: 33%; height: 36%; } /* 左下 */
-        #btn-char4 { top: 52%; left: 52%; width: 33%; height: 36%; } /* 右下：江逸 */
+        /* --- 2. 選角畫面：透明按鈕與發光特效 --- */
+        #intro-menu-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 150; display: none; }
+        #char-select-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .char-select-btn { position: absolute; cursor: pointer; z-index: 160; transition: 0.3s; border-radius: 15px; }
+        /* 滑鼠移上去時的微微發光感 */
+        .char-select-btn:hover { background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
+        
+        /* 精準對齊四張圖的位子 (百分比定位，縮放絕對不跑位) */
+        #btn-char1 { top: 12%; left: 15%; width: 33%; height: 36%; } /* 左上：周渺 */
+        #btn-char2 { top: 12%; left: 52%; width: 33%; height: 36%; } /* 右上 */
+        #btn-char3 { top: 52%; left: 15%; width: 33%; height: 36%; } /* 左下 */
+        #btn-char4 { top: 52%; left: 52%; width: 33%; height: 36%; } /* 右下：江逸 */
 
-        /* ✨ 底部兩個橢圓形按鈕 (課程與設定) ✨ */
-        #btn-lesson { top: 91%; left: 26%; width: 37%; height: 7%; border-radius: 40px; } 
-        #btn-setting { top: 91%; left: 64.5%; width: 14%; height: 7%; border-radius: 40px; }
+        /* ✨ 新增：底部兩個橢圓形按鈕 (課程與設定) ✨ */
+        #btn-lesson { top: 91%; left: 26%; width: 37%; height: 7%; border-radius: 40px; } 
+        #btn-setting { top: 91%; left: 64.5%; width: 14%; height: 7%; border-radius: 40px; }
 
-        /* 通用覆蓋樣式，用於遮蓋圖片像素 */
-        .intro-ui-cover { position: absolute; background-color: #000; /* 使用黑色遮蓋 */ z-index: 155; pointer-events: none; /* 遮蓋層不阻擋點擊圖片 */ }
+        /* 通用覆蓋樣式，用於遮蓋圖片像素 */
+        .intro-ui-cover { position: absolute; background-color: #000; /* 使用黑色遮蓋 */ z-index: 155; pointer-events: none; /* 遮蓋層不阻擋點擊圖片 */ }
 
-        /* UI按鈕樣式，對話框內往回步驟需要用 */
-        .sys-btn { position: absolute; top: 20px; right: 20px; background-color: rgba(212, 175, 55, 0.7); color: white; border: 1px solid #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; z-index: 170; font-size: 16px; transition: 0.3s; }
-        .sys-btn:hover { background-color: rgba(212, 175, 55, 1); }
+        /* UI按鈕樣式，對話框內往回步驟需要用 */
+        .sys-btn { position: absolute; top: 20px; right: 20px; background-color: rgba(212, 175, 55, 0.7); color: white; border: 1px solid #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; z-index: 170; font-size: 16px; transition: 0.3s; }
+        .sys-btn:hover { background-color: rgba(212, 175, 55, 1); }
+        #back-btn:disabled { display: none; }
 
-        /* --- 3. 對話系統與打字機效果 --- */
-        #dialogue-box { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; height: 180px; background-color: rgba(20, 20, 20, 0.9); border: 2px solid #d4af37; border-radius: 10px; box-sizing: border-box; padding: 40px 30px 20px 30px; color: #fff; cursor: pointer; display: none; z-index: 50; }
-        #speaker-name { position: absolute; top: -20px; left: 30px; background-color: #d4af37; color: #fff; padding: 5px 20px; font-size: 22px; font-weight: bold; border-radius: 5px; }
-        #dialogue-text { font-size: 22px; line-height: 1.6; font-weight: bold; }
+        /* --- 3. 對話系統與打字機效果 --- */
+        #dialogue-box { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; height: 180px; background-color: rgba(20, 20, 20, 0.9); border: 2px solid #d4af37; border-radius: 10px; box-sizing: border-box; padding: 40px 30px 20px 30px; color: #fff; cursor: pointer; display: none; z-index: 50; }
+        #speaker-name { position: absolute; top: -20px; left: 30px; background-color: #d4af37; color: #fff; padding: 5px 20px; font-size: 22px; font-weight: bold; border-radius: 5px; }
+        #dialogue-text { font-size: 22px; line-height: 1.6; font-weight: bold; }
 
-        /* --- 4. 選項與特殊互動 --- */
-        #options-container { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 20px; width: 60%; display: none; z-index: 60; }
-        .option-btn { background-color: rgba(255, 255, 255, 0.95); color: #333; border: 2px solid #d4af37; padding: 15px 20px; font-size: 20px; font-weight: bold; border-radius: 8px; cursor: pointer; text-align: center; }
-        .option-btn:hover { background-color: #d4af37; color: #fff; }
+        /* --- 4. 選項與特殊互動 --- */
+        #options-container { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 20px; width: 60%; display: none; z-index: 60; }
+        .option-btn { background-color: rgba(255, 255, 255, 0.95); color: #333; border: 2px solid #d4af37; padding: 15px 20px; font-size: 20px; font-weight: bold; border-radius: 8px; cursor: pointer; text-align: center; }
+        .option-btn:hover { background-color: #d4af37; color: #fff; }
 
-        #interact-btn { position: absolute; background-color: rgba(255, 255, 255, 0.9); border: 2px dashed #a67c52; padding: 15px 40px; font-size: 24px; font-weight: bold; color: #5c3a21; cursor: pointer; border-radius: 10px; display: none; z-index: 70; animation: pulse 1.5s infinite; transform: translate(-50%, -50%); }
-        #paper-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 80; }
-        #paper-content { background-color: #fdf5e6; width: 500px; height: 300px; padding: 40px; border-radius: 5px; font-size: 30px; color: #333; display: flex; justify-content: center; align-items: center; text-align: center; transform: rotate(-2deg); cursor: pointer; position: relative; box-shadow: 10px 10px 20px rgba(0,0,0,0.5); }
-        
-        @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.05); } }
-    </style>
+        #interact-btn { position: absolute; background-color: rgba(255, 255, 255, 0.9); border: 2px dashed #a67c52; padding: 15px 40px; font-size: 24px; font-weight: bold; color: #5c3a21; cursor: pointer; border-radius: 10px; display: none; z-index: 70; animation: pulse 1.5s infinite; transform: translate(-50%, -50%); }
+        #paper-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 80; }
+        #paper-content { background-color: #fdf5e6; width: 500px; height: 300px; padding: 40px; border-radius: 5px; font-size: 30px; color: #333; display: flex; justify-content: center; align-items: center; text-align: center; transform: rotate(-2deg); cursor: pointer; position: relative; box-shadow: 10px 10px 20px rgba(0,0,0,0.5); }
+        
+        @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.05); } }
+    </style>
 </head>
 <body>
 
 <div id="game-container">
-    <div id="start-screen" onclick="goToMenu()">
-        <img src="0.png" alt="封面" onerror="this.src='Start.png'">
-    </div>
+    <div id="start-screen" onclick="goToMenu()">
+        <img src="0.jpg" alt="封面" onerror="this.src='Start.png'">
+    </div>
 
-    <div id="intro-menu-screen">
-        <img id="char-select-img" src="Intro Menu-2.png" alt="選角" style="width:100%; height:100%; object-fit:cover;">
-        
-        <div id="btn-char1" class="char-select-btn" onclick="startStory('zhou')"></div>
-        <div id="btn-char2" class="char-select-btn" onclick="alert('此路線尚未開放')"></div>
-        <div id="btn-char3" class="char-select-btn" onclick="alert('此路線尚未開放')"></div>
-        <div id="btn-char4" class="char-select-btn" onclick="startStory('jiang')"></div>
-        
-        <div id="btn-lesson" class="char-select-btn" onclick="openLesson()"></div>
-        <div id="btn-setting" class="char-select-btn" onclick="alert('目前功能尚未開放')"></div>
-    </div>
-    
-    <div id="lesson-screen" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background-color:#000; z-index:180; cursor:pointer;" onclick="nextLessonImage()">
-        <img id="lesson-img" src="" style="width:100%; height:100%; object-fit:cover;">
-        <div style="position:absolute; right:30px; bottom:20px; color:rgba(255,255,255,0.7); font-size:18px; pointer-events:none; letter-spacing: 2px;">點擊畫面繼續 ▼</div>
-    </div>
-    
-    <img id="bg-image" src="">
-    <div id="interact-btn"></div>
-    
-    <div id="paper-modal" onclick="closePaper()">
-        <div id="paper-content">『可以坐久一點沒關係。』<br><span style="font-size:14px; color:#888; position:absolute; bottom:15px; right:20px;">▼ 點擊關閉</span></div>
-    </div>
-    
-    <div id="dialogue-box" onclick="handleBoxClick()">
-        <div id="speaker-name"></div>
-        <div id="dialogue-text"></div>
-    </div>
+    <div id="intro-menu-screen">
+        <img id="char-select-img" src="Intro Menu-2.png" alt="選角" onerror="this.src='Intro Menu-2.png'">
+        
+        <div id="btn-char1" class="char-select-btn" onclick="startStory('zhou')"></div>
+        <div id="btn-char2" class="char-select-btn" onclick="alert('此路線尚未開放')"></div>
+        <div id="btn-char3" class="char-select-btn" onclick="alert('此路線尚未開放')"></div>
+        <div id="btn-char4" class="char-select-btn" onclick="startStory('jiang')"></div>
+        
+        <div id="btn-lesson" class="char-select-btn" onclick="openLesson()"></div>
+        <div id="btn-setting" class="char-select-btn" onclick="alert('目前功能尚未開放')"></div>
+    </div>
+    <div id="lesson-screen" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background-color:#000; z-index:180; cursor:pointer;" onclick="nextLessonImage()">
+        <img id="lesson-img" src="" style="width:100%; height:100%; object-fit:cover;">
+        <div style="position:absolute; right:30px; bottom:20px; color:rgba(255,255,255,0.7); font-size:18px; pointer-events:none; letter-spacing: 2px;">點擊畫面繼續 ▼</div>
+    </div>
+    <img id="bg-image" src="">
+    <button id="back-btn" class="sys-btn" style="display:none;" onclick="prevLine()">← 往回一步</button> <div id="options-container"></div>
+    <div id="interact-btn"></div>
+    
+    <div id="paper-modal" onclick="closePaper()">
+        <div id="paper-content">『可以坐久一點沒關係。』<br><span style="font-size:14px; color:#888; position:absolute; bottom:15px; right:20px;">▼ 點擊關閉</span></div>
+    </div>
+    
+    <div id="dialogue-box" onclick="handleBoxClick()">
+        <div id="speaker-name"></div>
+        <div id="dialogue-text"></div>
+    </div>
 </div>
 
 <script>
-    // --- 1. 背景音樂控制與檔案命名 ---
-    const bgmFiles = {
-        rainy: "rainy_bgm.mp3",   // 雨夜場景音樂
-        school: "school_bgm.mp3", // 操場場景音樂
-        sad: "sad_bgm.mp3"        // 分離場景音樂
-    };
+    // --- 1. 背景音樂控制與檔案命名 ---
+    // 請將你的音樂檔案分別命名為以下名稱：
+    const bgmFiles = {
+        rainy: "rainy_bgm.mp3",   // 雨夜場景音樂
+        school: "school_bgm.mp3", // 操場場景音樂
+        sad: "sad_bgm.mp3"        // 分離場景音樂
+    };
 
-    let currentBgmAudio = new Audio();
-    currentBgmAudio.loop = true;
+    let currentBgmAudio = new Audio();
+    currentBgmAudio.loop = true;
 
-    // 播放音樂的邏輯
-    function playBGM(type) {
-        const file = bgmFiles[type];
-        if (file && (!currentBgmAudio.src || !currentBgmAudio.src.includes(file))) {
-            currentBgmAudio.src = file;
-            currentBgmAudio.play().catch(e => console.log("需使用者互動後播放"));
-        }
-    }
+    // 播放音樂的邏輯
+    function playBGM(type) {
+        const file = bgmFiles[type];
+        if (file && (!currentBgmAudio.src || !currentBgmAudio.src.includes(file))) {
+            currentBgmAudio.src = file;
+            currentBgmAudio.play().catch(e => console.log("需使用者互動後播放"));
+        }
+    }
 
-    // --- 2. 完整劇本資料庫 (含變速打字機標記 <slow>, <fast>) ---
-    // ✨ 劇本裡所有 .jpg 全部改為 .png ✨
-    const zhouScript = [
-        { bg: "streetnight", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", rain: true, bgm: "rainy" },
-        { bg: "streetnight", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "倏忽，一聲語氣強烈的咒罵穿透了雨幕，隨即是幾記沉悶的碰撞聲，像拳頭砸在肉上，伴隨微弱幾不可察的悶哼。", rain: true },
-        { bg: "streetnight", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他一頭張揚的金髮被雨打濕，校服襯衫沾著灰，唇角滲著紅。", rain: true },
-        { bg: "boy.png", speaker: "旁白", text: "他呼吸急促，肩膀隨著疼痛微顫，但眼神依舊冷得像能把人隔絕在外。就在其中一人抬手要再揍下去時——", rain: true },
-        { bg: "streetnight", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
-        { bg: "bad", speaker: "旁白", text: "雨勢漸大。幾聲咒罵混雜在雨聲裡，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", rain: true },
-        { bg: "angry.png", speaker: "周渺", text: "「......多管閒事。」", rain: true },
-        { 
-            bg: "close.street", speaker: "抉擇", text: "看著倒在牆邊的他，你的回應是？", 
-            options: [
-                { text: "就當我是在做善事", nextLine: 9 },
-                { text: "⋯⋯", nextLine: 10 }
-            ],
-            rain: true
-        },
-        // 分支 1 (Index 9)
-        { bg: "close.street", speaker: "Y/N", text: "「就當作我是在做善事、行善積德囉。」你不理會他的排斥，蹲下與之平視，檢查他的傷勢。", rain: true, jumpTo: 11 },
-        // 分支 2 (Index 10)
-        { bg: "close.street", speaker: "Y/N", text: "「⋯⋯嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」你蹲下與之平視，檢查他的傷勢。", rain: true },
-        
-        { bg: "angryboy.png", speaker: "周渺", text: "「別碰我。」他語氣強硬，動作也抗拒著，眼神仍帶著防備。", rain: true },
-        { bg: "hand.png", speaker: "Y/N", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，但堅定地握住他的手腕。", rain: true },
-        { bg: "umback", speaker: "Y/N", text: "「以後小心點，記得去醫院看看。」你簡單包紮後，留下了一把備用傘，轉身離去。", rain: true },
-        { bg: "plainface", speaker: "周渺", text: "「奇怪的人......」他看著你的背影喃喃自語。", rain: true },
-        
-        // 場景切換：操場 (Index 15)
-        { bg: "run.png", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色。放學後，你到周渺就讀的高中找他。空氣瀰漫著溫柔和靜謐。", rain: false, bgm: "school" },
-        { bg: "run.png", speaker: "旁白", text: "你們並肩走在安靜的操場。他偶爾偷看你，又迅速移開視線，耳尖在夕光中微微發紅。" },
-        { bg: "cat", speaker: "旁白", text: "突然，一聲貓叫聲劃破了寧靜——", sound: "Soundcat.mp4" },
-        { bg: "cat", speaker: "Y/N", text: "「哇，好可愛的貓咪......」你伸出手，雖然被牠的叫聲嚇了一跳，但仍柔聲安撫牠。" },
-        { bg: "mimi", speaker: "旁白", text: "小貓感受到你的善意，乖順地蹭了蹭你的掌心。你指腹順著牠柔軟的背毛慢慢滑過。" },
-        { bg: "run.png", speaker: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」你彎起嘴角輕笑。" },
-        { bg: "shyboy.png", speaker: "周渺", text: "「怎麼又提起來、別逗我了......」" },
-        { bg: "run.png", speaker: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」" },
-        { bg: "shyboy.png", speaker: "周渺", text: "「姐、姐姐......」他害羞地低下了頭。" },
-        
-        // 劇情三：分離 (Index 24)
-        { bg: "car.png", speaker: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」", bgm: "sad" },
-        { bg: "carboy.png", speaker: "周渺", text: "「姐姐......你不要我了嗎？」" },
-        { bg: "car.png", speaker: "Y/N", text: "「你還小，未來會遇到更多不同的人......分開對我們來說都好。」你語氣冷硬。" },
-        { bg: "carboy.png", speaker: "周渺", text: "「Y/N，別再把我當小孩了！」他打斷你，眼神中滿是掙扎。" },
-        { bg: "carboy.png", speaker: "周渺", text: "「姐姐、姐姐，不要丟下我⋯⋯」他慌張又無措地想伸手抓住你，試圖挽留。" },
-        { 
-            bg: "car.png", speaker: "抉擇", text: "看著他眼眶中的淚水，你是否願意接受他的挽留？", 
-            options: [
-                { text: "接受挽留，回抱他", nextLine: 30 },
-                { text: "轉身離去，不再回頭", nextLine: 31 }
-            ]
-        },
-        { bg: "car.png", speaker: "旁白", text: "你終究還是心軟了，伸手回抱住這個顫抖的少年。他的世界在那一刻重新亮了起來。", action: "endGame" },
-        { bg: "car.png", speaker: "旁白", text: "你推開了他的手，頭也不回地走入雨幕。這段關係終究劃下了句點。", action: "endGame" }
-    ];
-    
-    // --- 完整劇本：江逸 (雙重心理戰終極版) ---
-    // 江逸劇本本來就是 PNG，保持不變
-    const jiangScript = [
-        // 【第一幕：初次相遇】
-        { bg: "JiangYi/Street-1.png", speaker: "你 (OS)", text: "好累……經歷了一個早上的課程，好想找個地方趴一下……<br>嗯？好濃郁的咖啡烘焙香氣……" },
-        { bg: "JiangYi/Wind chimes.png", speaker: "", text: "（妳順著香味，推開了街角一間咖啡廳的門。）<br>— 清脆的風鈴聲響起 —" },
-        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "你好～歡迎光臨，請問今天想喝點什麼？" },
-        { bg: "JiangYi/Start Counter.png", speaker: "", text: "", action: "showMenuInteract", hideDialogue: true },
-        { bg: "JiangYi/Menu.png", speaker: "你 (OS)", text: "（看看菜單上有什麼吧……）", 
-          options: [
-              { text: "我第一次來，請問有推薦的嗎？", nextLine: 5 },
-              { text: "我想要一杯熱美式就好……", nextLine: 6 }
-          ] 
-        },
-        { bg: "JiangYi/Making Coffee.png", speaker: "江逸", text: "看妳好像有點累。如果怕太苦，可以考慮「熱的燕麥奶拿鐵」。燕麥奶拿鐵適合想稍微打起精神的時候。", nextLine: 7 },
-        { bg: "JiangYi/Making Coffee.png", speaker: "江逸", text: "好的，一杯熱美式。", nextLine: 7 },
-        { bg: "JiangYi/Making Coffee.png", speaker: "你", text: "好～謝謝你！" },
-        { bg: "JiangYi/Love Seat.png", speaker: "江逸", text: "有想坐在哪裡嗎？如果不介意，可以考慮靠窗的那個座位。" },
-        { bg: "JiangYi/Love Seat.png", speaker: "你", text: "好啊，謝謝你！" },
-        { bg: "JiangYi/Seat Window.png", speaker: "你 (OS)", text: "（坐在窗邊，感覺這份寧靜正一點一滴地治癒著疲憊……）" },
-        { bg: "JiangYi/Tray.png", speaker: "你", text: "好香的味道～<br>（托盤上的咖啡旁，似乎壓著一張折起來的紙條）", action: "showPaperInteract" },
-        { bg: "JiangYi/Tray.png", speaker: "你", text: "看完紙條的那刻，心頭暖暖的，露出了滿足的微笑。" },
+    // 請在你的渲染/切換對話函式最後執行這個檢查
+    function checkBGM(index) {
+        if (zhouScript[index] && zhouScript[index].bgm) {
+            playBGM(zhouScript[index].bgm);
+        }
+    }
 
-        // 【第二幕：期中考與雙重試探】
-        // 過場黑畫面
-        { bg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", speaker: "", text: "（幾天後，期中考週的地獄正式降臨……）" },
-        { bg: "JiangYi/Wind chimes.png", speaker: "你 (OS)", text: "（剛經歷了一場毀滅性的期中考，我現在只想找個安靜的地方躲起來。）" },
-        { bg: "JiangYi/Start Counter.png", speaker: "你", text: "江逸……我想要一杯熱美式。" },
-        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（看著我糟糕的臉色，他沉默了一下）<br>……今天沒有美式. 這杯是熱可可. 去坐著吧." },
-        { bg: "JiangYi/Before Close Eye.png", speaker: "你 (OS)", text: "（他沒有多問，只是給了一杯不在菜單上的熱可可. 緊繃的情緒放鬆下來，眼皮越來越重……）" },
-        
-        // 過場黑畫面 (睡著)
-        { bg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", speaker: "", text: "（不知不覺間，陷入了深沉的睡眠……）" },
-        { bg: "JiangYi/Arm.png", speaker: "你", text: "嗯……？<br>（迷迷糊糊睜開眼，發現身上蓋著一條深色的毛毯。）" },
-        { bg: "JiangYi/Arm.png", speaker: "你", text: "<br>（有一股淡淡的咖啡豆香氣...）" },
-        { bg: "JiangYi/Open Eyes to night.png", speaker: "你 (OS)", text: "（天啊，竟然已經這麼晚了嗎？而且……店裡的音樂被關掉了，安靜得只剩下製冰機的微弱低鳴。）" },
-        
-        // ⚡ 第一道考驗：行為界線 ⚡
-        { bg: "JiangYi/JiangYi Close eye.png", speaker: "你 (OS)", text: "（江逸竟然也睡著了。他看起來那麼脆弱，又那麼疏離。我該怎麼做？）", 
-          options: [
-              { text: "【心疼關心】把身上的毛毯輕輕蓋到他的身上", nextLine: 23 },
-              { text: "【尊重界線】輕輕敲幾下木桌喚醒他", nextLine: 27 }
-          ] 
-        },
+    // --- 2. 完整劇本資料庫 (含音效與音樂標記) ---
+    const zhouScript = [
+        { bg: "streetnight", speaker: "旁白", text: "晚間，城市淅瀝瀝地下著雨，無情沖刷每一處，雨聲像沒完沒了的碎玻璃，一片片砸在城市的雨夜裡。", rain: true, bgm: "rainy" },
+        { bg: "streetnight", speaker: "旁白", text: "一如往常，你走在那條熟悉的路上，準備回家。", rain: true },
+        { bg: "streetnight", speaker: "旁白", text: "倏忽，一聲語氣強烈的咒罵穿透了雨幕，隨即是幾記沉悶的碰撞聲，像拳頭砸在肉上，伴隨微弱幾不可察的悶哼。", rain: true },
+        { bg: "streetnight", speaker: "旁白", text: "巷口昏黃的路燈下，你看見一名身著校服的學生被兩個男生困在牆邊。他一頭張揚的金髮被雨打濕，校服襯衫沾著灰，唇角滲著紅。", rain: true },
+        { bg: "boy.jpg", speaker: "旁白", text: "他呼吸急促，肩膀隨著疼痛微顫，但眼神依舊冷得像能把人隔絕在外。就在其中一人抬手要再揍下去時——", rain: true },
+        { bg: "streetnight", speaker: "Y/N", text: "「住手，我已經報警了！」", rain: true },
+        { bg: "bad", speaker: "旁白", text: "雨勢漸大。幾聲咒罵混雜在雨聲裡，那兩人踩著濺起的水花，迅速消失在深沉的雨夜盡頭。", rain: true },
+        { bg: "angry.jpg", speaker: "周渺", text: "「......多管閒事。」", rain: true },
+        { 
+            bg: "close.street", speaker: "抉擇", text: "看著倒在牆邊的他，你的回應是？", 
+            options: [
+                { text: "就當我是在做善事", nextLine: 9 },
+                { text: "⋯⋯", nextLine: 10 }
+            ],
+            rain: true
+        },
+        // 分支 1 (Index 9)
+        { bg: "close.street", speaker: "Y/N", text: "「就當作我是在做善事、行善積德囉。」你不理會他的排斥，蹲下與之平視，檢查他的傷勢。", rain: true, jumpTo: 11 },
+        // 分支 2 (Index 10)
+        { bg: "close.street", speaker: "Y/N", text: "「⋯⋯嘴角破的蠻深的，手臂的傷口也有點大，你可能需要去醫院。」你蹲下與之平視，檢查他的傷勢。", rain: true },
+        
+        { bg: "angryboy.jpg", speaker: "周渺", text: "「別碰我。」他語氣強硬，動作也抗拒著，眼神仍帶著防備。", rain: true },
+        { bg: "hand.jpg", speaker: "Y/N", text: "「受傷了就好好待著別動，我看看傷口嚴不嚴重。」你放軟了語調，但堅定地握住他的手腕。", rain: true },
+        { bg: "umback", speaker: "Y/N", text: "「以後小心點，記得去醫院看看。」你簡單包紮後，留下了一把備用傘，轉身離去。", rain: true },
+        { bg: "plainface", speaker: "周渺", text: "「奇怪的人......」他看著你的背影喃喃自語。", rain: true },
+        
+        // 場景切換：操場 (Index 15)
+        { bg: "run.jpg", speaker: "旁白", text: "夕陽把操場暈染成柔和的橘金色。放學後，你到周渺就讀的高中找他。空氣瀰漫著溫柔和靜謐。", rain: false, bgm: "school" },
+        { bg: "run.jpg", speaker: "旁白", text: "你們並肩走在安靜的操場。他偶爾偷看你，又迅速移開視線，耳尖在夕光中微微發紅。" },
+        { bg: "cat", speaker: "旁白", text: "突然，一聲貓叫聲劃破了寧靜——", sound: "Soundcat.mp4" },
+        { bg: "cat", speaker: "Y/N", text: "「哇，好可愛的貓咪......」你伸出手，雖然被牠的叫聲嚇了一跳，但仍柔聲安撫牠。" },
+        { bg: "mimi", speaker: "旁白", text: "小貓感受到你的善意，乖順地蹭了蹭你的掌心。你指腹順著牠柔軟的背毛慢慢滑過。" },
+        { bg: "run.jpg", speaker: "Y/N", text: "「看看，像不像第一次見面的你，張牙舞爪的，但明明很可愛的嘛。」你彎起嘴角輕笑。" },
+        { bg: "shyboy.jpg", speaker: "周渺", text: "「怎麼又提起來、別逗我了......」" },
+        { bg: "run.jpg", speaker: "Y/N", text: "「喊聲姐姐來聽聽囉，我考慮一下要不要放過你。」" },
+        { bg: "shyboy.jpg", speaker: "周渺", text: "「姐、姐姐......」他害羞地低下了頭。" },
+        
+        // 劇情三：分離 (Index 24)
+        { bg: "car.jpg", speaker: "Y/N", text: "「我們還是分開吧，我不想把你綁在我身邊，耽誤你的未來。」", bgm: "sad" },
+        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐......你不要我了嗎？」" },
+        { bg: "car.jpg", speaker: "Y/N", text: "「你還小，未來會遇到更多不同的人......分開對我們來說都好。」你語氣冷硬。" },
+        { bg: "carboy.jpg", speaker: "周渺", text: "「Y/N，別再把我當小孩了！」他打斷你，眼神中滿是掙扎。" },
+        { bg: "carboy.jpg", speaker: "周渺", text: "「姐姐、姐姐，不要丟下我⋯⋯」他慌張又無措地想伸手抓住你，試圖挽留。" },
+        { 
+            bg: "car.jpg", speaker: "抉擇", text: "看著他眼眶中的淚水，你是否願意接受他的挽留？", 
+            options: [
+                { text: "接受挽留，回抱他", nextLine: 30 },
+                { text: "轉身離去，不再回頭", nextLine: 31 }
+            ]
+        },
+        { bg: "car.jpg", speaker: "旁白", text: "你終究還是心軟了，伸手回抱住這個顫抖的少年。他的世界在那一刻重新亮了起來。", action: "endGame" },
+        { bg: "car.jpg", speaker: "旁白", text: "你推開了他的手，頭也不回地走入雨幕。這段關係終究劃下了句點。", action: "endGame" }
+    ];
+    
+    // --- 完整劇本：江逸 (雙重心理戰終極版) ---
+    const jiangScript = [
+        // 【第一幕：初次相遇】
+        { bg: "JiangYi/Street-1.png", speaker: "你 (OS)", text: "好累……經歷了一個早上的課程，好想找個地方趴一下……<br>嗯？好濃郁的咖啡烘焙香氣……" },
+        { bg: "JiangYi/Wind chimes.png", speaker: "", text: "（妳順著香味，推開了街角一間咖啡廳的門。）<br>— 清脆的風鈴聲響起 —" },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "你好～歡迎光臨，請問今天想喝點什麼？" },
+        { bg: "JiangYi/Start Counter.png", speaker: "", text: "", action: "showMenuInteract", hideDialogue: true },
+        { bg: "JiangYi/Menu.png", speaker: "你 (OS)", text: "（看看菜單上有什麼吧……）", 
+          options: [
+              { text: "我第一次來，請問有推薦的嗎？", nextLine: 5 },
+              { text: "我想要一杯熱美式就好……", nextLine: 6 }
+          ] 
+        },
+        { bg: "JiangYi/Making Coffee.png", speaker: "江逸", text: "看妳好像有點累。如果怕太苦，可以考慮「熱的燕麥奶拿鐵」。燕麥奶拿鐵適合想稍微打起精神的時候。", nextLine: 7 },
+        { bg: "JiangYi/Making Coffee.png", speaker: "江逸", text: "好的，一杯熱美式。", nextLine: 7 },
+        { bg: "JiangYi/Making Coffee.png", speaker: "女主角", text: "好～謝謝你！" },
+        { bg: "JiangYi/Love Seat.png", speaker: "江逸", text: "有想坐在哪裡嗎？如果不介意，可以考慮靠窗的那個座位。" },
+        { bg: "JiangYi/Love Seat.png", speaker: "你", text: "好啊，謝謝你！" },
+        { bg: "JiangYi/Seat Window.png", speaker: "你 (OS)", text: "（坐在窗邊，感覺這份寧靜正一點一滴地治癒著疲憊……）" },
+        { bg: "JiangYi/Tray.png", speaker: "你", text: "好香的味道～<br>（托盤上的咖啡旁，似乎壓著一張折起來的紙條）", action: "showPaperInteract" },
+        { bg: "JiangYi/Tray.png", speaker: "你", text: "看完紙條的那刻，心頭暖暖的，露出了滿足的微笑。" },
 
-        // 💔 第一道考驗：Bad End 路線 (Index 23-26)
-        { bg: "JiangYi/JiangYi Close eye.png", speaker: "你 (動作)", text: "（我不忍心他這樣睡. 我輕輕伸手，試圖將毛毯蓋到他的身上.）<br><slow>你這樣會著涼的……</slow>", nextLine: 24 },
-        { bg: "JiangYi/Angry.png", speaker: "江逸", text: "（像觸電一樣猛然睜開眼睛，眼神裡的脆弱瞬間化為極度的防備. 江逸猛地揮開我的手）<br>「<fast>別碰我！</fast>」", nextLine: 25 },
-        { bg: "JiangYi/Angry.png", speaker: "江逸", text: "<br>「請妳搞清楚自己的身份. 不代表可以隨意觸碰我，更不代表可以自作主張地關心我. 你走吧.」", nextLine: 26 },
-        { bg: "JiangYi/Angry.png", speaker: "你 (OS)", text: "（空氣瞬間降到冰點. 我知道，那扇半掩的門，被我不受控的『關心』徹底關上了.）<br><span style='color:#ff5555'>—— Bad End：無法跨越的理性界線 ——</span>", action: "endGame" },
+        // 【第二幕：期中考與雙重試探】
+        // 過場黑畫面
+        { bg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", speaker: "", text: "（幾天後，期中考週的地獄正式降臨……）" },
+        { bg: "JiangYi/Wind chimes.png", speaker: "你 (OS)", text: "（剛經歷了一場毀滅性的期中考，我現在只想找個安靜的地方躲起來。）" },
+        { bg: "JiangYi/Start Counter.png", speaker: "你", text: "江逸……我想要一杯熱美式。" },
+        { bg: "JiangYi/Start Counter.png", speaker: "江逸", text: "（看著我糟糕的臉色，他沉默了一下）<br>……今天沒有美式。這杯是熱可可。去坐著吧。" },
+        { bg: "JiangYi/Before Close Eye.png", speaker: "你 (OS)", text: "（他沒有多問，只是給了一杯不在菜單上的熱可可。緊繃的情緒放鬆下來，眼皮越來越重……）" },
+        
+        // 過場黑畫面 (睡著)
+        { bg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", speaker: "", text: "（不知不覺間，陷入了深沉的睡眠……）" },
+        { bg: "JiangYi/Arm.png", speaker: "你", text: "嗯……？<br>（迷迷糊糊睜開眼，發現身上蓋著一條深色的毛毯。）" },
+        { bg: "JiangYi/Arm.png", speaker: "你", text: "<br>（有一股淡淡的咖啡豆香氣...）" },
+        { bg: "JiangYi/Open Eyes to night.png", speaker: "你 (OS)", text: "（天啊，竟然已經這麼晚了嗎？而且……店裡的音樂被關掉了，安靜得只剩下製冰機的微弱低鳴。）" },
+        
+        // ⚡ 第一道考驗：行為界線 ⚡
+        { bg: "JiangYi/JiangYi Close eye.png", speaker: "你 (OS)", text: "（江逸竟然也睡著了。他看起來那麼脆弱，又那麼疏離。我該怎麼做？）", 
+          options: [
+              { text: "【心疼關心】把身上的毛毯輕輕蓋到他的身上", nextLine: 23 },
+              { text: "【尊重界線】輕輕敲幾下木桌喚醒他", nextLine: 27 }
+          ] 
+        },
 
-        // 💖 第一道考驗：Pass 路線 (Index 27-30)
-        { bg: "JiangYi/JiangYi Close eye.png", speaker: "你 (動作)", text: "（我克制住觸碰他的衝動，輕輕敲了敲木桌.）<br>江逸……江逸，醒醒.", nextLine: 28 },
-        { bg: "JiangYi/Heart.png", speaker: "江逸", text: "（迷濛地睜開眼睛，看到眼前的我，眼神閃過一絲驚訝，隨後很快恢復冷靜）<br>……嗯？妳醒啦？不好意思，我也……", nextLine: 29 },
-        { bg: "JiangYi/Heart.png", speaker: "你", text: "不小心睡太熟了，真的非常對不起，耽誤你打烊的時間了！", nextLine: 30 },
-        { bg: "JiangYi/Heart.png", speaker: "江逸", text: "（防備的肩膀慢慢放鬆了些）<br>看妳睡得很沉，想說讓妳休息一下. 反正我也剛好需要休息.", nextLine: 31 },
+        // 💔 第一道考驗：Bad End 路線 (Index 23-26)
+        { bg: "JiangYi/JiangYi Close eye.png", speaker: "你 (動作)", text: "（我不忍心他這樣睡。我輕輕伸手，試圖將毛毯蓋到他的身上。）<br>你這樣會著涼的……", nextLine: 24 },
+        { bg: "JiangYi/Angry.png", speaker: "江逸", text: "（像觸電一樣猛然睜開眼睛，眼神裡的脆弱瞬間化為極度的防備。江逸猛地揮開我的手）<br>「別碰我！」", nextLine: 25 },
+        { bg: "JiangYi/Angry.png", speaker: "江逸", text: "<br>「請妳搞清楚自己的身份。不代表可以隨意觸碰我，更不代表可以自作主張地關心我。你走吧。」", nextLine: 26 },
+        { bg: "JiangYi/Angry.png", speaker: "你 (OS)", text: "（空氣瞬間降到冰點。我知道，那扇半掩的門，被我不受控的『關心』徹底關上了。）<br><span style='color:#ff5555'>—— Bad End：無法跨越的理性界線 ——</span>", action: "endGame" },
 
-        // ⚡ 第二道考驗：心理界線 ⚡
-        { bg: "JiangYi/WindowsNight.png", speaker: "你 (OS)", text: "（他明明做了這麼多貼心事：熱可可、毛毯、關音樂，卻又要裝出一副毫不在乎的模樣. 我該怎麼回應這份笨拙的溫柔？）", 
-          options: [
-              { text: "【過度解讀】拆穿偽裝，表達深深的感動", nextLine: 32 },
-              { text: "【陳述事實】輕鬆道謝，不給予情感壓力", nextLine: 36 }
-          ] 
-        },
+        // 💖 第一道考驗：Pass 路線 (Index 27-30)
+        { bg: "JiangYi/JiangYi Close eye.png", speaker: "你 (動作)", text: "（我克制住觸碰他的衝動，輕輕敲了敲木桌。）<br>江逸……江逸，醒醒。", nextLine: 28 },
+        { bg: "JiangYi/Heart.png", speaker: "江逸", text: "（迷濛地睜開眼睛，看到眼前的我，眼神閃過一絲驚訝，隨後很快恢復冷靜）<br>……嗯？妳醒啦？不好意思，我也……", nextLine: 29 },
+        { bg: "JiangYi/Heart.png", speaker: "你", text: "不小心睡太熟了，真的非常對不起，耽誤你打烊的時間了！", nextLine: 30 },
+        { bg: "JiangYi/Heart.png", speaker: "江逸", text: "（防備的肩膀慢慢放鬆了些）<br>看妳睡得很沉，想說讓妳休息一下。反正我也剛好需要休息。", nextLine: 31 },
 
-        // 💔 第二道考驗：Bad End 路線 (Index 32-35)
-        { bg: "JiangYi/NightAngry.png", speaker: "你", text: "江逸，其實你一直都在默默關心我對不對？關音樂、蓋毛毯……<slow>你明明有一顆很柔軟的心，為什麼總要裝得這麼冷漠？</slow>", nextLine: 33 },
-        { bg: "JiangYi/NightAngry.png", speaker: "江逸", text: "（臉上的血色瞬間褪去，眼神肉眼可見地冷卻下來）<br>……<slow>請妳不要過度解讀。</slow>", nextLine: 34 },
-        { bg: "JiangYi/NightAngry.png", speaker: "江逸", text: "店裡冷氣強，我只是不想有客人生病，處理起來很麻煩. 熱可可只是剛好有快過期的粉. 別把妳的幻想投射在我身上.", nextLine: 35 },
-        { bg: "JiangYi/NightAngry.png", speaker: "你 (OS)", text: "（我試圖扒開他的防衛，卻觸發了他最深層的恐懼. 他用最傷人的話，徹底斬斷了我們之間的可能.）<br><span style='color:#ff5555'>—— Bad End：自以為是的看透 ——</span>", action: "endGame" },
+        // ⚡ 第二道考驗：心理界線 ⚡
+        { bg: "JiangYi/WindowsNight.png", speaker: "你 (OS)", text: "（他明明做了這麼多貼心事：熱可可、毛毯、關音樂，卻又要裝出一副毫不在乎的模樣。我該怎麼回應這份笨拙的溫柔？）", 
+          options: [
+              { text: "【過度解讀】拆穿偽裝，表達深深的感動", nextLine: 32 },
+              { text: "【陳述事實】輕鬆道謝，不給予情感壓力", nextLine: 36 }
+          ] 
+        },
 
-        // 💖 第二道考驗：True End 路線 (Index 36-40)
-        { bg: "JiangYi/NightHeart.png", speaker: "你", text: "謝謝老闆的『靜音模式』和專屬毛毯！那杯熱可可超有效，睡一覺起來，我現在已經滿血復活了！", nextLine: 37 },
-        { bg: "JiangYi/NightHeart.png", speaker: "江逸", text: "（原本緊繃的身體，在聽到這句輕鬆的玩笑後，明顯地放鬆了下來）<br>……滿血復活就好. 看來那杯熱可可的成本沒有白花.", nextLine: 38 },
-        { bg: "JiangYi/NightHeart.png", speaker: "你", text: "絕對超值！為了報答老闆的恩情，我決定……明天來消費一杯最貴的咖啡！", nextLine: 39 },
-        { bg: "JiangYi/NightShy.png", speaker: "江逸", text: "（嘴角終於忍不住勾起一抹極度放鬆的輕笑）<br>最貴的？那我要考慮臨時漲價了. ……明天見. 妳點什麼，位子都幫妳留著.", nextLine: 40 },
-        { bg: "JiangYi/NightShy.png", speaker: "你 (OS)", text: "（我不去觸碰他的傷口，只是接住了他的好. 看著他放鬆的笑容，我知道，我拿到了通往他心裡的鑰匙.）<br><span style='color:#ffd700'>—— True End：不言而喻的默契 ——</span>", action: "endGame" }
-    ];
+        // 💔 第二道考驗：Bad End 路線 (Index 32-35)
+        { bg: "JiangYi/NightAngry.png", speaker: "你", text: "江逸，其實你一直都在默默關心我對不對？關音樂、蓋毛毯……<slow>你明明有一顆很柔軟的心，為什麼總要裝得這麼冷漠？</slow>", nextLine: 33 },
+        { bg: "JiangYi/NightAngry.png", speaker: "江逸", text: "（臉上的血色瞬間褪去，眼神肉眼可見地冷卻下來）<br>……<slow>請妳不要過度解讀。</slow>", nextLine: 34 },
+        { bg: "JiangYi/NightAngry.png", speaker: "江逸", text: "店裡冷氣強，我只是不想有客人生病，處理起來很麻煩。熱可可只是剛好有快過期的粉。別把妳的幻想投射在我身上。", nextLine: 35 },
+        { bg: "JiangYi/NightAngry.png", speaker: "你 (OS)", text: "（我試圖扒開他的防衛，卻觸發了他最深層的恐懼。他用最傷人的話，徹底斬斷了我們之間的可能。）<br><span style='color:#ff5555'>—— Bad End：自以為是的看透 ——</span>", action: "endGame" },
 
-    // --- 核心變數與打字機引擎 ---
-    let activeScript = []; let historyStack = []; let currentIndex = 0;
-    let isTyping = false; let currentFullText = ""; let typingTimer;
+        // 💖 第二道考驗：True End 路線 (Index 36-40)
+        { bg: "JiangYi/NightHeart.png", speaker: "你", text: "謝謝老闆的『靜音模式』和專屬毛毯！那杯熱可可超有效，睡一覺起來，我現在已經滿血復活了！", nextLine: 37 },
+        { bg: "JiangYi/NightHeart.png", speaker: "江逸", text: "（原本緊繃的身體，在聽到這句輕鬆的玩笑後，明顯地放鬆了下來）<br>……滿血復活就好。看來那杯熱可可的成本沒有白花。", nextLine: 38 },
+        { bg: "JiangYi/NightHeart.png", speaker: "你", text: "絕對超值！為了報答老闆的恩情，我決定……明天來消費一杯最貴的咖啡！", nextLine: 39 },
+        { bg: "JiangYi/NightShy.png", speaker: "江逸", text: "（嘴角終於忍不住勾起一抹極度放鬆的輕笑）<br>最貴的？那我要考慮臨時漲價了。……明天見。妳點什麼，位子都幫妳留著。", nextLine: 40 },
+        { bg: "JiangYi/NightShy.png", speaker: "你 (OS)", text: "（我不去觸碰他的傷口，只是接住了他的好。看著他放鬆的笑容，我知道，我拿到了通往他心裡的鑰匙。）<br><span style='color:#ffd700'>—— True End：不言而喻的默契 ——</span>", action: "endGame" }
+    ];
 
-    // --- 導航與封面控制 ---
-    function goToMenu() { document.getElementById("start-screen").style.display = "none"; document.getElementById("intro-menu-screen").style.display = "block"; }
+    // --- 核心變數 ---
+    let activeScript = []; let historyStack = []; let currentIndex = 0;
+    let isTyping = false; let currentFullText = ""; let typingTimer;
 
-    function startStory(char) {
-        activeScript = (char === 'zhou') ? zhouScript : jiangScript;
-        document.getElementById("intro-menu-screen").style.display = "none";
-        currentIndex = 0; historyStack = [];
-        renderLine(0);
-    }
+    // --- 導航功能 ---
+    function goToMenu() { document.getElementById("start-screen").style.display = "none"; document.getElementById("intro-menu-screen").style.display = "block"; }
+    function backToStart() { document.getElementById("intro-menu-screen").style.display = "none"; document.getElementById("start-screen").style.display = "flex"; } // 這個功能已用遮蓋替代
 
-    // --- 升級版打字機引擎 (支援 <slow>, <fast>) ---
-    function startTypewriter(text) {
-        // 先把所有速度標籤拿掉，作為最後直接顯示的完整文字
-        currentFullText = text.replace(/<\/?(slow|fast)>/g, ""); 
-        isTyping = true; 
-        const target = document.getElementById("dialogue-text");
-        target.innerHTML = "";
-        let i = 0;
-        let speedModifier = 1; 
-        clearTimeout(typingTimer); // 清除舊的 timer
-        
-        function typeChar() {
-            if (i < text.length) {
-                // 處理 HTML 標籤
-                if (text[i] === '<') {
-                    let tag = "";
-                    while (text[i] !== '>' && i < text.length) { tag += text[i]; i++; }
-                    tag += '>';
-                    
-                    // 速度控制
-                    if (tag === '<slow>') { speedModifier = 6; i++; typeChar(); return; }  
-                    if (tag === '</slow>') { speedModifier = 1; i++; typeChar(); return; } 
-                    if (tag === '<fast>') { speedModifier = 0.2; i++; typeChar(); return; }
-                    if (tag === '</fast>') { speedModifier = 1; i++; typeChar(); return; } 
-                    
-                    // br 等一般標籤直接印出
-                    target.innerHTML += tag;
-                    i++;
-                    typeChar();
-                    return;
-                }
+    function startStory(char) {
+        activeScript = (char === 'zhou') ? zhouScript : jiangScript;
+        document.getElementById("intro-menu-screen").style.display = "none";
+        currentIndex = 0; historyStack = ["intro"];
+        renderLine(0);
+    }
 
-                // 印出一般字元
-                target.innerHTML += text[i];
-                let baseSpeed = 35; // 基礎打字速度 (ms)
-                let currentSpeed = baseSpeed * speedModifier;
-                
-                // 標點符號停頓 (僅在正常速度下生效)
-                let char = text[i];
-                if (speedModifier >= 1) {
-                    if (char === '…' || char === '。') currentSpeed = baseSpeed * 8;
-                    else if (char === '！' || char === '？' || char === '，') currentSpeed = baseSpeed * 4;
-                }
-                
-                i++;
-                typingTimer = setTimeout(typeChar, currentSpeed);
-            } else {
-                stopTyping();
-            }
-        }
-        typeChar(); // 開始打字
-    }
+    function renderLine(index) {
+        const line = activeScript[index];
+        document.getElementById("bg-image").src = line.bg;
+        
+        const nameBox = document.getElementById("speaker-name");
+        nameBox.innerText = line.speaker || "";
+        nameBox.style.display = line.speaker ? "block" : "none";
 
-    function stopTyping() {
-        clearTimeout(typingTimer);
-        document.getElementById("dialogue-text").innerHTML = currentFullText;
-        isTyping = false;
-        if (activeScript[currentIndex].options) {
-            document.getElementById("options-container").style.display = "flex";
-        }
-    }
+        const dialogueBox = document.getElementById("dialogue-box");
+        dialogueBox.style.display = line.hideDialogue ? "none" : "block";
+        
+        startTypewriter(line.text || "");
 
-    // --- 核心渲染與點擊邏輯 ---
-    function renderLine(index) {
-        const line = activeScript[index];
-        document.getElementById("bg-image").src = line.bg;
-        
-        const nameBox = document.getElementById("speaker-name");
-        nameBox.innerText = line.speaker || "";
-        nameBox.style.display = line.speaker ? "block" : "none";
+        // 重置 UI
+        document.getElementById("options-container").style.display = "none";
+        document.getElementById("interact-btn").style.display = "none";
+        document.getElementById("back-btn").style.display = (historyStack.length <= 1) ? "none" : "block"; // 往回一步功能
+        
+        // 特殊行動
+        if (line.options) {
+            const optContainer = document.getElementById("options-container");
+            optContainer.innerHTML = "";
+            line.options.forEach(opt => {
+                const btn = document.createElement("div");
+                btn.className = "option-btn"; btn.innerText = opt.text;
+                btn.onclick = (e) => { e.stopPropagation(); historyStack.push(currentIndex); currentIndex = opt.nextLine; renderLine(currentIndex); };
+                optContainer.appendChild(btn);
+            });
+            setTimeout(() => { if(!isTyping) optContainer.style.display = "flex"; }, 500);
+        }
 
-        const dialogueBox = document.getElementById("dialogue-box");
-        dialogueBox.style.display = line.hideDialogue ? "none" : "block";
-        
-        startTypewriter(line.text || "");
+        if (line.action === "showMenuInteract" || line.action === "showPaperInteract") {
+            const btn = document.getElementById("interact-btn");
+            btn.style.display = "block";
+            btn.innerText = (line.action === "showMenuInteract") ? "點擊菜單" : "查看紙條";
+            btn.style.left = (line.action === "showMenuInteract") ? "58%" : "50%";
+            btn.style.top = (line.action === "showMenuInteract") ? "85%" : "50%";
+            btn.onclick = (e) => { e.stopPropagation(); if (line.action === "showMenuInteract") nextLine(); else openPaper(); };
+        }
 
-        // 重置 UI
-        document.getElementById("options-container").style.display = "none";
-        document.getElementById("interact-btn").style.display = "none";
-        
-        // 特殊行動
-        if (line.options) {
-            const optContainer = document.getElementById("options-container");
-            optContainer.innerHTML = "";
-            line.options.forEach(opt => {
-                const btn = document.createElement("div");
-                btn.className = "option-btn"; btn.innerText = opt.text;
-                btn.onclick = (e) => { e.stopPropagation(); historyStack.push(currentIndex); currentIndex = opt.nextLine; renderLine(currentIndex); };
-                optContainer.appendChild(btn);
-            });
-            setTimeout(() => { if(!isTyping) optContainer.style.display = "flex"; }, 500);
-        }
+        dialogueBox.onclick = handleBoxClick;
+    }
 
-        if (line.action === "showMenuInteract" || line.action === "showPaperInteract") {
-            const btn = document.getElementById("interact-btn");
-            btn.style.display = "block";
-            btn.innerText = (line.action === "showMenuInteract") ? "點擊菜單" : "查看紙條";
-            btn.style.left = (line.action === "showMenuInteract") ? "58%" : "50%";
-            btn.style.top = (line.action === "showMenuInteract") ? "85%" : "50%";
-            btn.onclick = (e) => { e.stopPropagation(); if (line.action === "showMenuInteract") nextLine(); else openPaper(); };
-        }
-    }
+    // --- 打字機與對話框系統 ---
+    function startTypewriter(text) {
+        isTyping = true; currentFullText = text;
+        const target = document.getElementById("dialogue-text");
+        target.innerHTML = "";
+        let i = 0;
+        clearInterval(typingTimer);
+        
+        typingTimer = setInterval(() => {
+            if (i < text.length) {
+                if (text[i] === '<') { // 處理 <br> 等標籤
+                    let tag = "";
+                    while (text[i] !== '>' && i < text.length) { tag += text[i]; i++; }
+                    tag += '>'; i++; target.innerHTML += tag;
+                } else { target.innerHTML += text[i]; i++; }
+            } else { stopTyping(); }
+        }, 30);
+    }
 
-    function handleBoxClick() {
-        if (isTyping) { stopTyping(); } 
-        else {
-            if (activeScript[currentIndex].action === "endGame") { location.reload(); }
-            else if (!activeScript[currentIndex].options && !activeScript[currentIndex].action) { nextLine(); }
-        }
-    }
+    function stopTyping() {
+        clearInterval(typingTimer);
+        document.getElementById("dialogue-text").innerHTML = currentFullText;
+        isTyping = false;
+        // 如果有選項，在打字結束後顯示
+        if (activeScript[currentIndex].options) {
+            document.getElementById("options-container").style.display = "flex";
+        }
+    }
 
-    function nextLine() { 
-        historyStack.push(currentIndex); 
-        const currentLine = activeScript[currentIndex];
-        if (currentLine.nextLine !== undefined) {
-            currentIndex = currentLine.nextLine;
-        } else if (currentLine.jumpTo !== undefined) {
-            currentIndex = currentLine.jumpTo;
-        } else {
-            currentIndex++; 
-        }
-        renderLine(currentIndex); 
-    }
+    function handleBoxClick() {
+        if (isTyping) { stopTyping(); } 
+        else {
+            if (activeScript[currentIndex].action === "endGame") { location.reload(); }
+            else if (!activeScript[currentIndex].options && !activeScript[currentIndex].action) { nextLine(); }
+        }
+    }
 
-    function openPaper() { document.getElementById("paper-modal").style.display = "flex"; }
-    function closePaper() { document.getElementById("paper-modal").style.display = "none"; nextLine(); }
+    // --- 進入下一句 (修復分歧路線跳轉功能) ---
+    function nextLine() { 
+        historyStack.push(currentIndex); 
+        
+        const currentLine = activeScript[currentIndex];
+        // 檢查是否有指定跳轉到哪一句 (支援 nextLine 或 jumpTo)
+        if (currentLine.nextLine !== undefined) {
+            currentIndex = currentLine.nextLine;
+        } else if (currentLine.jumpTo !== undefined) {
+            currentIndex = currentLine.jumpTo;
+        } else {
+            currentIndex++; // 沒指定就正常 +1
+        }
+        
+        renderLine(currentIndex); 
+    }
+    function prevLine() { // 往回一步功能
+        let prev = historyStack.pop();
+        if (prev === "intro") { backToStart(); goToMenu(); } 
+        else { currentIndex = prev; renderLine(currentIndex); }
+    }
 
-    // --- ✨ 新增：小學堂純圖片輪播系統 ✨ ---
-    // ✨ 這裡也全部改為 .png ✨
-    const lessonImages = ["Zhou.png", "Mu.png", "Lin.png", "Jiang.png"];
-    let currentLessonImgIndex = 0;
+    function openPaper() { document.getElementById("paper-modal").style.display = "flex"; }
+    function closePaper() { document.getElementById("paper-modal").style.display = "none"; nextLine(); }
 
-    function openLesson() {
-        document.getElementById("intro-menu-screen").style.display = "none";
-        document.getElementById("lesson-screen").style.display = "block";
-        currentLessonImgIndex = 0; // 從第一張開始
-        document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
-    }
+    // --- 精確座標選角 (基於圖片 X 與 Y 範圍判斷) ---
+    function checkCharSelect(e) {
+        // 使用 offsetX/offsetY 可以直接抓取相對於圖片像素的座標，無視外部 CSS 縮放
+        const x = e.offsetX / e.target.clientWidth * 1280;
+        const y = e.offsetY / e.target.clientHeight * 720;
 
-    function nextLessonImage() {
-        currentLessonImgIndex++;
-        if (currentLessonImgIndex < lessonImages.length) {
-            // 如果還有圖片，就換下一張
-            document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
-        } else {
-            // 圖片播完，關閉小學堂，回到選單
-            document.getElementById("lesson-screen").style.display = "none";
-            document.getElementById("intro-menu-screen").style.display = "block";
-        }
-    }
+        // X: 從左到右 X 像素座標從 0 到 1280
+        // Y: 從上到下 Y 像素座標從 0 到 720
 
-    // --- ✨ 圖片預載入系統 (防止卡頓) ✨ ---
-    function preloadImages() {
-        // ✨ 所有 jpg 備份改 png ✨
-        const imagesToLoad = ["0.png", "Start.png", "selector_bg.png", "Intro Menu-2.png"]; 
-        
-        // 把小學堂的圖片加進去下載
-        lessonImages.forEach(url => imagesToLoad.push(url));
+        // 獨立判定四個區域 (基於 1280x720 核心比例)
+        
+        // 1. 周渺 (左上角)
+        if (x >= 20 && x <= 610 && y >= 20 && y <= 330) { 
+            startStory('zhou'); // 左上：周渺
+        } 
+        // 2. alert (右上角)
+        else if (x >= 670 && x <= 1260 && y >= 20 && y <= 330) { 
+            alert('此路線尚未開放'); // 右上：Alert
+        } 
+        // 3. alert (左下角)
+        else if (x >= 20 && x <= 610 && y >= 390 && y <= 700) { 
+            alert('此路線尚未開放'); // 左下：Alert
+        } 
+        // 4. 江逸 (右下角)
+        else if (x >= 670 && x <= 1260 && y >= 390 && y <= 700) { 
+            startStory('jiang'); // 右下：江逸
+        }
+        // 如果點擊在角色間的空隙或背景，則不做任何事
+    }
 
-        // 把劇本裡的背景圖也加進去
-        const allScripts = [...zhouScript, ...jiangScript];
-        allScripts.forEach(line => {
-            if (line.bg && !line.bg.startsWith("data:image") && !imagesToLoad.includes(line.bg)) {
-                imagesToLoad.push(line.bg);
-            }
-        });
+    // --- 全螢幕縮放系統 ---
+    function autoScale() {
+        const container = document.getElementById('game-container');
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        // 計算縮放比例（取寬與高中較小的那個倍數，確保不超出畫面）
+        const scale = Math.min(windowWidth / 1280, windowHeight / 720);
+        
+        container.style.transform = `scale(${scale})`;
+    }
+    // --- ✨ 新增：小學堂純圖片輪播系統 ✨ ---
+    // 將你做好的四張圖依序放進來
+    const lessonImages = ["Lesson/Zhou.png", "Lesson/Lin.png", "Lesson/Mu.png", "Lesson/Jiang.png"];
+    let currentLessonImgIndex = 0;
 
-        // 在背景默默下載
-        imagesToLoad.forEach(url => {
-            const img = new Image();
-            img.src = url;
-        });
-        console.log("所有 PNG 圖片預載入完畢！");
-    }
+    function openLesson() {
+        document.getElementById("intro-menu-screen").style.display = "none";
+        document.getElementById("lesson-screen").style.display = "block";
+        currentLessonImgIndex = 0; // 從第一張開始
+        document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
+    }
 
-    // --- 全螢幕縮放系統 ---
-    function autoScale() {
-        const container = document.getElementById('game-container');
-        const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
-        container.style.transform = `scale(${scale})`;
-    }
-    window.addEventListener('resize', autoScale);
-    window.addEventListener('DOMContentLoaded', autoScale);
-    window.addEventListener('load', preloadImages); // 網頁讀取完自動執行預載入
+    function nextLessonImage() {
+        currentLessonImgIndex++;
+        if (currentLessonImgIndex < lessonImages.length) {
+            // 如果還有圖片，就換下一張
+            document.getElementById("lesson-img").src = lessonImages[currentLessonImgIndex];
+        } else {
+            // 圖片播完，關閉小學堂，回到選單
+            document.getElementById("lesson-screen").style.display = "none";
+            document.getElementById("intro-menu-screen").style.display = "block";
+        }
+    }
+
+    // --- ✨ 圖片預載入系統 (包含劇本與小學堂圖片，防止卡頓) ✨ ---
+    function preloadImages() {
+        const imagesToLoad = ["0.jpg", "Start.png", "selector_bg.jpg", "Intro Menu-2.jpg"];
+        
+        // 把小學堂的圖片加進去下載
+        lessonImages.forEach(url => imagesToLoad.push(url));
+
+        // 把周渺和江逸劇本裡的背景圖也加進去
+        const allScripts = [...zhouScript, ...jiangScript];
+        allScripts.forEach(line => {
+            if (line.bg && !line.bg.startsWith("data:image") && !imagesToLoad.includes(line.bg)) {
+                imagesToLoad.push(line.bg);
+            }
+        });
+
+        // 在背景默默下載
+        imagesToLoad.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+        console.log("所有圖片預載入完畢！");
+    }
+
+    // --- 全螢幕縮放系統 ---
+    function autoScale() {
+        const container = document.getElementById('game-container');
+        const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+        container.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', autoScale);
+    window.addEventListener('DOMContentLoaded', autoScale);
+    window.addEventListener('load', preloadImages); // 網頁讀取完自動執行預載入
 </script>
 </body>
 </html>

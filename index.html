@@ -15,9 +15,19 @@
         #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 200; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         #start-screen img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 2. 選角畫面：遮蓋圖片 UI 元素與精確點擊 --- */
+        /* --- 2. 選角畫面：透明按鈕與發光特效 --- */
         #intro-menu-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 150; display: none; }
-        #char-select-img { width: 100%; height: 100%; object-fit: cover; cursor: default; }
+        #char-select-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .char-select-btn { position: absolute; cursor: pointer; z-index: 160; transition: 0.3s; border-radius: 15px; }
+        /* 滑鼠移上去時的微微發光感 */
+        .char-select-btn:hover { background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
+        
+        /* 精準對齊四張圖的位子 (百分比定位，縮放絕對不跑位) */
+        #btn-char1 { top: 12%; left: 15%; width: 33%; height: 36%; } /* 左上：周渺 */
+        #btn-char2 { top: 12%; left: 52%; width: 33%; height: 36%; } /* 右上 */
+        #btn-char3 { top: 52%; left: 15%; width: 33%; height: 36%; } /* 左下 */
+        #btn-char4 { top: 52%; left: 52%; width: 33%; height: 36%; } /* 右下：江逸 */
 
         /* 通用覆蓋樣式，用於遮蓋圖片像素 */
         .intro-ui-cover { position: absolute; background-color: #000; /* 使用黑色遮蓋 */ z-index: 155; pointer-events: none; /* 遮蓋層不阻擋點擊圖片 */ }
